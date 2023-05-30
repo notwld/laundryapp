@@ -1,36 +1,57 @@
 import React, { useState } from 'react';
-import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity,ScrollView } from 'react-native';
 import logo from '../assets/Logo.png';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
-export default function Login() {
+export default function Register() {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
+  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
-  const handleLogin = () => {
-    // Perform login logic here
+  const handleRegister = () => {
+    // Perform registration logic here
   };
 
   return (
-    <View style={styles.loginScreen}>
+    <ScrollView contentContainerStyle={styles.registerScreen}>
       <Image source={logo} style={styles.logo} />
-      <Text style={styles.head}>Hi, Welcome Back!</Text>
-      <Text style={styles.textLight}>Hello again, you've been missed!</Text>
+      <Text style={styles.head}>Register</Text>
       <View style={styles.inputView}>
         <TextInput
-          placeholder="Enter username"
+          placeholder="First Name"
+          style={styles.inputTag}
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+        <TextInput
+          placeholder="Last Name"
+          style={styles.inputTag}
+          value={lastName}
+          onChangeText={setLastName}
+        />
+        <TextInput
+          placeholder="Email"
+          style={styles.inputTag}
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          placeholder="Username"
           style={styles.inputTag}
           value={username}
           onChangeText={setUsername}
         />
         <TextInput
-          placeholder="Enter Password"
+          placeholder="Password"
           style={styles.inputTag}
           value={password}
           onChangeText={setPassword}
+          secureTextEntry
         />
         <Picker
           selectedValue={role}
@@ -43,22 +64,21 @@ export default function Login() {
           <Picker.Item label="Laundry Staff" value="LAUNDRYSTAFF" />
           <Picker.Item label="Admin" value="ADMIN" />
         </Picker>
-        <Text>Forgot Password?</Text>
 
-        <TouchableOpacity style={styles.btn} onPress={handleLogin}>
-          <Text style={styles.btnText}>Login</Text>
+        <TouchableOpacity style={styles.btn} onPress={handleRegister}>
+          <Text style={styles.btnText}>Register</Text>
         </TouchableOpacity>
-        <Text style={{ textAlign: 'center' }} onPress={() => navigation.navigate('Register')}>
-          Register
+        <Text style={{ textAlign: 'center' }} onPress={() => navigation.navigate('Login')}>
+          Already have an account? Login
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  loginScreen: {
-    flex: 1,
+  registerScreen: {
+    
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -70,9 +90,6 @@ const styles = StyleSheet.create({
   head: {
     fontSize: 20,
     fontWeight: '700',
-  },
-  textLight: {
-    color: 'grey',
   },
   inputTag: {
     marginVertical: 8,

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,152 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  UserID       Int          @id @default(autoincrement())
+  FirstName    String
+  LastName     String
+  Address      String
+  Phone        String
+  Email        String
+  Username     String
+  Password     String
+  Role         Role         
+  Permission   Permission?   
+  Customer     Customer?
+  Vendor       Vendor?
+  LaundryStaff LaundryStaff?
+  Admin        Admin?
+
+  
+}
+
+model Customer {
+  CustomerID     Int       @id
+  CustomerName   String
+  BillingAddress String
+  PaymentMethod  String
+  UserID         Int @unique
+  Orders         Order[]
+  User           User      @relation(fields: [UserID], references: [UserID])
+
+}
+
+model Vendor {
+  VendorID         Int       @id
+  UserID           Int @unique
+  Name             String
+  Rates            Float     
+  Rating           Float     
+  Address          String
+  Phone            String
+  Email            String
+  Website          String?
+  Specialization   String?
+  DeliveryAvailable Boolean
+  WorkingHours     String?
+  Availability     String?
+  Venues           Venue[]
+  User             User      @relation(fields: [UserID], references: [UserID])
+
+
+}
+
+model Venue {
+  VenueID    Int       @id
+  VendorID   Int
+  IsCurtain  Boolean
+  IsJeans    Boolean
+  IsBedSheet Boolean
+  IsBlanket  Boolean
+  IsShirt    Boolean
+  ISTrouser  Boolean
+  IsShalwar  Boolean
+  IsKameez   Boolean
+  Vendor     Vendor    @relation(fields: [VendorID], references: [VendorID])
+}
+
+model Order {
+  OrderID       Int           @id @default(autoincrement())
+  CustomerID    Int          @unique
+  OrderDate     DateTime
+  ServiceType   String
+  TotalCost     Float
+  PaymentStatus PaymentStatus
+  OrderItems    OrderItem[]
+  Delivery      Delivery?
+  Customer      Customer     @relation(fields: [CustomerID], references: [CustomerID])
+}
+
+model Item {
+  ItemID    Int      @id @default(autoincrement())
+  ItemType  String
+  ItemName  String
+  Quantity  Int
+  OrderItems OrderItem[]
+}
+
+model OrderItem {
+  OrderItemID Int     @id @default(autoincrement())
+  OrderID     Int
+  ItemID      Int
+  Quantity    Int
+  Order       Order   @relation(fields: [OrderID], references: [OrderID])
+  Item        Item    @relation(fields: [ItemID], references: [ItemID])
+}
+
+model LaundryStaff {
+  StaffID  Int     @id
+  JobTitle String
+  UserID   Int @unique
+  User     User    @relation(fields: [UserID], references: [UserID])
+}
+
+model LaundryMachine {
+  MachineID    Int           @id @default(autoincrement())
+  MachineName  String
+  Availability Availability
+}
+
+model Delivery {
+  DeliveryID    Int          @id @default(autoincrement())
+  OrderID       Int         @unique
+  DeliveryDate  DateTime
+  Status        Status
+  Order         Order        @relation(fields: [OrderID], references: [OrderID])
+}
+
+model Admin {
+  AdminID  Int     @id
+  UserID   Int @unique
+  User     User    @relation(fields: [UserID], references: [UserID])
+}
+
+enum Role {
+  CUSTOMER
+  VENDOR
+  LAUNDRYSTAFF
+  ADMIN
+}
+
+enum Permission {
+  READ
+  WRITE
+  DELETE
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+}
+
+enum Availability {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum Status {
+  DELIVERED
+  UNDELIVERED
 }

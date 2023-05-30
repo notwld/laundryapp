@@ -1,0 +1,107 @@
+const { PrismaClient } = require('@prisma/client')
+
+const { registerValidation, loginValidation } = require('../middlewares/validate')
+
+const prisma = new PrismaClient()
+const router = require("express").Router()
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
+
+
+router.get('/register', async (req, res, next) => {
+    if (req.session.user) {
+        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
+    }
+    else {
+        res.json({ message: "Register Page" })
+    }
+})
+
+
+router.get('/login', async (req, res, next) => {
+    if (req.session.user) {
+        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
+    }
+    else {
+        res.json({ message: "Login Page" })
+    }
+})
+
+router.post('/register', async (req, res, next) => {
+    if (!req.session.user) {
+        const user = await prisma.user.findFirst({
+            where: {
+                Email: req.body.email
+            }
+        })
+
+        if (user) return res.status(400).send("User Already Exists!")
+
+        const hashPass = await bcrypt.hash(req.body.password, bcrypt.genSaltSync(10))
+        const validate = registerValidation(req.body)
+            .then(async (response) => {
+                const saveUser = await prisma.user.create({
+                    data: {
+                        FirstName: req.body.fname,
+                        LastName: req.body.lname,
+                        Email: req.body.email,
+                        Username: req.body.username,
+                        Role: req.body.role,
+                        Password: hashPass,
+                        
+                    }
+                })
+                    .then((user) => { return res.status(200).send({ message: "User Registered!", registeredUser: user.name }) })
+                    .catch((err) => { return res.status(400).send(err) })
+            })
+            .catch((err) => { return res.status(400).send(err) })
+    }
+    else {
+        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user/login`)
+    }
+})
+
+
+router.post('/login', async (req, res, next) => {
+    if (!req.session.user) {
+        const user = await prisma.user.findFirst({
+            where: {
+                Email: req.body.email
+            }
+        })
+
+        if (!user) return res.status(400).send("User doesn't exists!")
+
+        const validate = loginValidation(req.body)
+            .then(async (response) => {
+                const compare = bcrypt.compareSync(req.body.password, user.password)
+                if (!compare) return res.status(400).send("Invalid Password")
+
+                const token = jwt.sign(user.id, process.env.SECRET_TOKEN)
+                const session = req.session
+                session.token = token
+                session.user = user.UserID
+                session.role = user.Role
+                session.userName = user.Username
+                // return res.status(200).send({ message: "Logged In!", token: token, user: user.name })
+                return res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
+            })
+            .catch((err) => { return res.status(400).send(err) })
+    }
+    else {
+        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
+    }
+})
+
+router.get('/logout', async (req, res, next) => {
+    if (req.session.user) {
+        req.session.destroy()
+        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user/login`)
+    }
+    else {
+        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user/login`)
+    }
+})
+
+
+module.exports = router

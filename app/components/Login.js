@@ -1,33 +1,73 @@
 import React, { useState } from 'react';
-import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity,Alert,KeyboardAvoidingView } from 'react-native';
 import logo from '../assets/Logo.png';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Login() {
   const navigation = useNavigation();
-  const [username, setUsername] = useState('');
+  const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
-  const handleLogin = () => {
-    // Perform login logic here
+  const handleLogin = async () => {
+    if (email === '' || password === '' || role === '') {
+      Alert.alert('Please fill all the fields!');
+      return;
+    }
+    console.log(email, password, role)
+
+    await fetch('http://192.168.1.107:19001/api/user/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email, password: password, role: role
+      }),
+    })
+
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data)
+        if (data.message === 'Logged In!') {
+          setPassword('');
+          setemail('');
+          setRole('');
+
+          if (data.user.Role === 'CUSTOMER') {
+            navigation.navigate('CustomerHome', { user: data.user,token:data.token });
+          } else if (data.user.Role === 'VENDOR') {
+            navigation.navigate('VendorHome', { user: data.user,token:data.token });
+          } else if (data.user.Role === 'LAUNDRYSTAFF') {
+            navigation.navigate('LaundryStaffHome', { user: data.user,token:data.token });
+          } else if (data.user.Role === 'ADMIN') {
+            navigation.navigate('AdminHome', { user: data.user,token:data.token });
+          }
+        } else {
+          Alert.alert('Login Failed', data.message);
+        }
+      })
+        .catch((err) => console.log(err));
+
+
   };
 
   return (
-    <View style={styles.loginScreen}>
+    <KeyboardAvoidingView behavior="padding" enabled style={styles.loginScreen}>
       <Image source={logo} style={styles.logo} />
       <Text style={styles.head}>Hi, Welcome Back!</Text>
       <Text style={styles.textLight}>Hello again, you've been missed!</Text>
       <View style={styles.inputView}>
         <TextInput
-          placeholder="Enter username"
+          placeholder="Enter email"
           style={styles.inputTag}
-          value={username}
-          onChangeText={setUsername}
+          value={email}
+          onChangeText={setemail}
         />
         <TextInput
           placeholder="Enter Password"
+          secureTextEntry={true}
           style={styles.inputTag}
           value={password}
           onChangeText={setPassword}
@@ -52,7 +92,7 @@ export default function Login() {
           Register
         </Text>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -61,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 10,
   },
   logo: {
     width: 200,
@@ -78,7 +118,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderWidth: 1,
     padding: 12,
-    paddingRight: 150,
+    paddingRight: 85,
     borderRadius: 7,
   },
   inputView: {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity,ScrollView } from 'react-native';
+import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity,ScrollView, Alert,KeyboardAvoidingView } from 'react-native';
 import logo from '../assets/Logo.png';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
@@ -12,13 +12,55 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
 
   const handleRegister = () => {
-    // Perform registration logic here
+    if (username === '' || password === '' || role === '' || email === '' || firstName === '' || lastName === '' || phone === '' || address === '') {
+      Alert.alert('Please fill all the fields!');
+      return;
+    }
+    fetch('http://192.168.1.107:19001/api/user/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        fname: firstName,
+        lname: lastName,
+        username: username,
+        email: email,
+        phone: phone,
+        address: address,
+        password: password,
+        role: role,
+       }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+       if (data.message === 'User Registered!') {
+        setAddress('');
+        setPhone('');
+        setLastName('');
+        setFirstName('');
+        setEmail('');
+        setUsername('');
+        setPassword('');
+        setRole('');
+
+          Alert.alert('Success', 'User registered successfully!');
+          navigation.navigate('Login');
+        }
+        else {
+          Alert.alert('Registration Failed', data.message);
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.registerScreen}>
+    
+      <ScrollView contentContainerStyle={styles.registerScreen}>
       <Image source={logo} style={styles.logo} />
       <Text style={styles.head}>Register</Text>
       <View style={styles.inputView}>
@@ -35,17 +77,31 @@ export default function Register() {
           onChangeText={setLastName}
         />
         <TextInput
+          placeholder="Username"
+          style={styles.inputTag}
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
           placeholder="Email"
           style={styles.inputTag}
           value={email}
           onChangeText={setEmail}
         />
         <TextInput
-          placeholder="Username"
+          placeholder="Phone" 
           style={styles.inputTag}
-          value={username}
-          onChangeText={setUsername}
+          value={phone}
+          onChangeText={setPhone}
         />
+
+        <TextInput
+          placeholder="Address"
+          style={styles.inputTag}
+          value={address}
+          onChangeText={setAddress}
+        />
+
         <TextInput
           placeholder="Password"
           style={styles.inputTag}

@@ -34,6 +34,7 @@ model Customer {
   Orders         Order[]
   User           User      @relation(fields: [UserID], references: [UserID])
 
+
 }
 
 model Vendor {

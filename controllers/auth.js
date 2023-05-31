@@ -67,8 +67,7 @@ router.post('/login', async (req, res, next) => {
                 session.user = user.UserID
                 session.role = user.Role
                 session.userName = user.Username
-                return res.status(200).send({ message: "Logged In!", token: token, user: user,role:user.Role })
-                // return res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user`)
+                return res.status(200).send({ message: "Logged In!", token: token, user: user })
             })
             .catch((err) => { return res.status(400).send(err) })
     }
@@ -82,10 +81,14 @@ router.post('/login', async (req, res, next) => {
 router.get('/logout', async (req, res, next) => {
     if (req.session.user) {
         req.session.destroy()
-        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user/login`)
+        res.json({
+            message: "Logged Out!"
+        })
     }
     else {
-        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user/login`)
+        res.json({
+            message: "Already Logged Out!"
+        })
     }
 })
 

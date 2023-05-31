@@ -31,8 +31,9 @@ app.all('*', (req, res, next) => {
 app.use((err, req, res, next) => {
     res.status(500).send(err)
 })
-
-//server (http for now)
-http.createServer(app).listen(process.env.PORT, () => {
-    console.log("Server running on http://localhost:3000")
-})
+const host = "192.168.1.107" || process.env.HOST || "localhost"
+const port = process.env.PORT || 3000
+http.createServer(app).listen(port, host, () => {
+    console.log(`Server running at http://${host}:${port}/`);
+}
+)

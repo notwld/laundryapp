@@ -8,25 +8,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 
 
-router.get('/register', async (req, res, next) => {
-    if (req.session.user) {
-        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
-    }
-    else {
-        res.json({ message: "Register Page" })
-    }
-})
-
-
-router.get('/login', async (req, res, next) => {
-    if (req.session.user) {
-        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
-    }
-    else {
-        res.json({ message: "Login Page" })
-    }
-})
-
 router.post('/register', async (req, res, next) => {
     if (!req.session.user) {
         const user = await prisma.user.findFirst({
@@ -86,13 +67,15 @@ router.post('/login', async (req, res, next) => {
                 session.user = user.UserID
                 session.role = user.Role
                 session.userName = user.Username
-                return res.status(200).send({ message: "Logged In!", token: token, user: user.Username,role:user.Role })
+                return res.status(200).send({ message: "Logged In!", token: token, user: user,role:user.Role })
                 // return res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user`)
             })
             .catch((err) => { return res.status(400).send(err) })
     }
     else {
-        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user/`)
+        res.json({
+            message:"Already Logged In!"
+        })
     }
 })
 

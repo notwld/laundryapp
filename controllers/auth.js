@@ -45,13 +45,15 @@ router.post('/register', async (req, res, next) => {
                         FirstName: req.body.fname,
                         LastName: req.body.lname,
                         Email: req.body.email,
+                        Address:req.body.address,
+                        Phone:req.body.phone,
                         Username: req.body.username,
                         Role: req.body.role,
                         Password: hashPass,
                         
                     }
                 })
-                    .then((user) => { return res.status(200).send({ message: "User Registered!", registeredUser: user.name }) })
+                    .then((user) => { return res.status(200).send({ message: "User Registered!", registeredUser: user.Username }) })
                     .catch((err) => { return res.status(400).send(err) })
             })
             .catch((err) => { return res.status(400).send(err) })
@@ -74,22 +76,22 @@ router.post('/login', async (req, res, next) => {
 
         const validate = loginValidation(req.body)
             .then(async (response) => {
-                const compare = bcrypt.compareSync(req.body.password, user.password)
+                const compare = bcrypt.compareSync(req.body.password, user.Password)
                 if (!compare) return res.status(400).send("Invalid Password")
 
-                const token = jwt.sign(user.id, process.env.SECRET_TOKEN)
+                const token = jwt.sign(user.UserID, process.env.SECRET_TOKEN)
                 const session = req.session
                 session.token = token
                 session.user = user.UserID
                 session.role = user.Role
                 session.userName = user.Username
-                // return res.status(200).send({ message: "Logged In!", token: token, user: user.name })
-                return res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
+                return res.status(200).send({ message: "Logged In!", token: token, user: user.Username })
+                // return res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user`)
             })
             .catch((err) => { return res.status(400).send(err) })
     }
     else {
-        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/blog/`)
+        res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user/`)
     }
 })
 

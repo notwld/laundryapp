@@ -17,7 +17,6 @@ model User {
   Username     String
   Password     String
   Role         Role         
-  Permission   Permission?   
   Customer     Customer?
   Vendor       Vendor?
   LaundryStaff LaundryStaff?
@@ -134,11 +133,6 @@ enum Role {
   ADMIN
 }
 
-enum Permission {
-  READ
-  WRITE
-  DELETE
-}
 
 enum PaymentStatus {
   PAID

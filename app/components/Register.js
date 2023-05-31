@@ -26,14 +26,14 @@ export default function Register() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ 
-        fname: firstName,
-        lname: lastName,
-        username: username,
-        email: email,
-        phone: phone,
-        address: address,
-        password: password,
-        role: role,
+        "fname": firstName,
+        "lname": lastName,
+        "username": username,
+        "email": email,
+        "phone": phone,
+        "address": address,
+        "password": password,
+        "role": role,
        }),
     })
       .then((res) => res.json())

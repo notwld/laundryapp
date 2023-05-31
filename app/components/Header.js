@@ -7,7 +7,10 @@ export default function Header({
 
     return (
         <View style={styles.header}>
-        <Image source={require('../assets/avatar.jpg')} style={styles.avatar} />
+       <View>
+       <Image source={require('../assets/avatar.jpg')} style={styles.avatar} />
+        <Text style={{fontSize:11}}>View Profile</Text>
+       </View>
         <View>
           <Text style={styles.headerText}>Welcome Back!</Text>
           <Text style={styles.subHeaderText}>{user.Username}</Text>

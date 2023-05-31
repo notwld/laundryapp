@@ -35,9 +35,9 @@ export default function CreateVendorForm(props) {
   return (
    <View style={{flex:1}}>
      <Header user={user} handleLogout={handleLogout} />
-     <Text style={{fontSize:20,fontWeight:'bold',textAlign:'center',padding:10}}>Create Vendor</Text>
     <ScrollView contentContainerStyle={styles.container}>
-       
+    <Text style={{fontSize:20,fontWeight:'bold',textAlign:'center',padding:10}}>Create Vendor</Text>
+
       <View style={{padding:20}}>
       <TextInput
         style={styles.input}

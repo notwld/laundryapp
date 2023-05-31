@@ -120,6 +120,9 @@ export default function VendorHome (props) {
             <TouchableOpacity onPress={() => navigation.navigate('CreateVendorForm', {user:user, token: token,handleLogout:handleLogout })}>
               <Text style={styles.createVendorText}>Create Vendor</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('CreateVendorForm', {user:user, token: token,handleLogout:handleLogout })}>
+              <Text style={styles.createVendorText}>Add Venue</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.vendorListContainer}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -161,6 +164,7 @@ export default function VendorHome (props) {
   },
   scrollViewContent: {
     flexGrow: 1,
+    paddingBottom: 50,
   },
     vendorHeader: {
       flexDirection: 'row',

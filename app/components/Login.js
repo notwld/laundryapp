@@ -23,7 +23,7 @@ export default function Login() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: email, password: password, role: role
+        "email": email, "password": password, "role": role
       }),
     })
 
@@ -83,7 +83,6 @@ export default function Login() {
           <Picker.Item label="Laundry Staff" value="LAUNDRYSTAFF" />
           <Picker.Item label="Admin" value="ADMIN" />
         </Picker>
-        <Text>Forgot Password?</Text>
 
         <TouchableOpacity style={styles.btn} onPress={handleLogin}>
           <Text style={styles.btnText}>Login</Text>
@@ -118,14 +117,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderWidth: 1,
     padding: 12,
-    paddingRight: 85,
+    width: 250,
     borderRadius: 7,
   },
   inputView: {
-    marginVertical: 20,
+    marginVertical: 10,
   },
   btn: {
-    marginVertical: 15,
+    marginVertical: 7,
     backgroundColor: 'blue',
     padding: 15,
     borderRadius: 7,

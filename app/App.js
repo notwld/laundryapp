@@ -9,6 +9,7 @@ import CustomerHome from './components/Customer/CustomerHome';
 import VendorHome from './components/Vendor/VendorHome';
 import LaundryStaffHome from './components/LaundryStaff/LaundryStaffHome';
 import CreateVendorForm from './components/Vendor/CreateVendorForm';
+import Profile from './components/Profile';
 
 
 const Stack = createNativeStackNavigator();
@@ -26,6 +27,7 @@ export default function App() {
         <Stack.Screen name="VendorHome" component={VendorHome}/>
         <Stack.Screen name="LaundryStaffHome" component={LaundryStaffHome}/>
         <Stack.Screen name="CreateVendorForm" component={CreateVendorForm}/>
+        <Stack.Screen name="Profile" component={Profile}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

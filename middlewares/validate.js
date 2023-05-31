@@ -21,6 +21,8 @@ const loginValidation = async (data) => {
   const schema = joi.object({
     email: joi.string().required(),
     password: joi.string().required(),
+    role: joi.string().required(),
+
   });
 
   const validate = await schema.validateAsync(data);

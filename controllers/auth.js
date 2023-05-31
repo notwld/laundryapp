@@ -68,7 +68,8 @@ router.post('/login', async (req, res, next) => {
     if (!req.session.user) {
         const user = await prisma.user.findFirst({
             where: {
-                Email: req.body.email
+                Email: req.body.email,
+                Role:req.body.role
             }
         })
 
@@ -85,7 +86,7 @@ router.post('/login', async (req, res, next) => {
                 session.user = user.UserID
                 session.role = user.Role
                 session.userName = user.Username
-                return res.status(200).send({ message: "Logged In!", token: token, user: user.Username })
+                return res.status(200).send({ message: "Logged In!", token: token, user: user.Username,role:user.Role })
                 // return res.redirect(`http://${req.hostname}:${process.env.PORT}/api/user`)
             })
             .catch((err) => { return res.status(400).send(err) })

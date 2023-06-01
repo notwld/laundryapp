@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Switch, Button, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, TextInput, Switch, Button, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import Header from '../Header';
+import cities from "../../../app/cities.json"
 
 export default function CreateVendorForm(props) {
   const { user, handleLogout, token } = props.route.params;
@@ -8,7 +10,7 @@ export default function CreateVendorForm(props) {
   const [name, setName] = useState('');
   const [rates, setRates] = useState('');
   const [rating, setRating] = useState('');
-  const [address, setAddress] = useState('');
+  const [location, setLocation] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
@@ -21,7 +23,7 @@ export default function CreateVendorForm(props) {
     setName('');
     setRates('');
     setRating('');
-    setAddress('');
+    setLocation('');
     setPhone('');
     setEmail('');
     setWebsite('');
@@ -58,12 +60,7 @@ export default function CreateVendorForm(props) {
             onChangeText={setRating}
             keyboardType="numeric"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Address"
-            value={address}
-            onChangeText={setAddress}
-          />
+
           <TextInput
             style={styles.input}
             placeholder="Phone"
@@ -76,7 +73,7 @@ export default function CreateVendorForm(props) {
             placeholder="Email"
             value={email}
             onChangeText={setEmail}
-            keyboardType="email-address"
+            keyboardType="email-location"
           />
           <TextInput
             style={styles.input}
@@ -84,37 +81,53 @@ export default function CreateVendorForm(props) {
             value={website}
             onChangeText={setWebsite}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Specialization"
-            value={specialization}
-            onChangeText={setSpecialization}
-          />
+          <Picker
+            selectedValue={specialization}
+            onValueChange={itemValue => setSpecialization(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Specialization" value="" />
+            <Picker.Item label="Washing" value="Washing" />
+            <Picker.Item label="Ironing" value="Ironing" />
+            <Picker.Item label="Dry Cleaning" value="Dry Cleaning" />
+            <Picker.Item label="Alterations" value="Alterations" />
+          </Picker>
+          <Picker
+            selectedValue={location}
+            onValueChange={itemValue => setLocation(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Location" value="" />
+            {cities.map((city, index) => (
+              <Picker.Item key={index} label={city.name} value={city.name} />
+            ))}
+          </Picker>
           <View style={styles.switchContainer}>
             <Switch
               value={deliveryAvailable}
               onValueChange={setDeliveryAvailable}
             />
-            <TextInput
-              style={styles.switchLabel}
-              editable={false}
-              pointerEvents="none"
-            >
+            <Text style={styles.switchLabel}>
               Delivery Available: {deliveryAvailable ? 'Yes' : 'No'}
-            </TextInput>
+            </Text>
+          </View>
+          <View style={styles.switchContainer}>
+            <Switch
+              value={availability}
+              onValueChange={setAvailability}
+            />
+            <Text style={styles.switchLabel}>
+              Availability: {availability ? 'Available' : 'Not Available'}
+            </Text>
           </View>
           <TextInput
             style={styles.input}
             placeholder="Working Hours"
             value={workingHours}
+            keyboardType="numeric"
             onChangeText={setWorkingHours}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Availability"
-            value={availability}
-            onChangeText={setAvailability}
-          />
+          
           <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
             <Text style={styles.btnText}>Create Vendor</Text>
           </TouchableOpacity>
@@ -142,6 +155,11 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     marginLeft: 10,
+  },
+  picker: {
+    borderWidth: 1,
+    borderRadius: 7,
+    marginBottom: 10,
   },
   btn: {
     marginVertical: 15,

@@ -1,15 +1,34 @@
 import { Text, View ,StyleSheet,Image,TouchableOpacity} from 'react-native'
+import {useNavigation} from '@react-navigation/native';
 
 export default function Header({
     user,
-    handleLogout
+    token,
 }) {
-
+  const navigation = useNavigation();
+const handleLogout = async() => {
+      await fetch('http://192.168.1.107:19001/api/user/logout')
+      .then((res) => res.json())
+      .then((data) => {
+        if(data.message === 'Logged Out!'){
+          navigation.navigate('Login');
+        }
+        else{
+          navigation.navigate('Login');
+        }
+      }
+      )
+      .catch((err) => console.log(err));
+    };
     return (
         <View style={styles.header}>
        <View>
+       <TouchableOpacity onPress={() => navigation.navigate('Profile',
+        {token:token}
+          )}>
        <Image source={require('../assets/avatar.jpg')} style={styles.avatar} />
         <Text style={{fontSize:11}}>View Profile</Text>
+       </TouchableOpacity>
        </View>
         <View>
           <Text style={styles.headerText}>Welcome Back!</Text>

@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  UserID       Int          @id @default(autoincrement())
+  UserID       Int           @id @default(autoincrement())
   FirstName    String
   LastName     String
   Address      String
@@ -16,13 +16,11 @@ model User {
   Email        String
   Username     String
   Password     String
-  Role         Role         
+  Role         Role
   Customer     Customer?
   Vendor       Vendor?
   LaundryStaff LaundryStaff?
   Admin        Admin?
-
-  
 }
 
 model Customer {
@@ -30,101 +28,128 @@ model Customer {
   CustomerName   String
   BillingAddress String
   PaymentMethod  String
-  UserID         Int @unique
+  UserID         Int       @unique
   Orders         Order[]
   User           User      @relation(fields: [UserID], references: [UserID])
-
-
+  Reviews        Reviews[]
+  Comment        Comment[]
 }
 
 model Vendor {
-  VendorID         Int       @id
-  UserID           Int @unique
-  Name             String
-  Rates            Float     
-  Rating           Float     
-  Address          String
-  Phone            String
-  Email            String
-  Website          String?
-  Specialization   String?
+  VendorID          Int              @id
+  UserID            Int              @unique
+  Name              String
+  Rates             Float
+  Location          String
+  Phone             String
+  Email             String
+  Website           String?
   DeliveryAvailable Boolean
-  WorkingHours     String?
-  Availability     String?
-  Venues           Venue[]
-  User             User      @relation(fields: [UserID], references: [UserID])
-
-
+  WorkingHours      String?
+  Availability      String?
+  User              User             @relation(fields: [UserID], references: [UserID])
+  Reviews           Reviews[]
+  Specialization    Specialization[]
+  Comment           Comment[]
 }
 
-model Venue {
-  VenueID    Int       @id
+model Reviews {
+  ReviewID   Int      @id @default(autoincrement())
   VendorID   Int
-  IsCurtain  Boolean
-  IsJeans    Boolean
-  IsBedSheet Boolean
-  IsBlanket  Boolean
-  IsShirt    Boolean
-  ISTrouser  Boolean
-  IsShalwar  Boolean
-  IsKameez   Boolean
-  Vendor     Vendor    @relation(fields: [VendorID], references: [VendorID])
+  CustomerID Int
+  ReviewText String
+  Vendor     Vendor   @relation(fields: [VendorID], references: [VendorID])
+  Customer   Customer @relation(fields: [CustomerID], references: [CustomerID])
 }
 
-model Order {
-  OrderID       Int           @id @default(autoincrement())
-  CustomerID    Int          @unique
-  OrderDate     DateTime
-  ServiceType   String
-  TotalCost     Float
-  PaymentStatus PaymentStatus
-  OrderItems    OrderItem[]
-  Delivery      Delivery?
-  Customer      Customer     @relation(fields: [CustomerID], references: [CustomerID])
+model Comment {
+  CommentID     Int       @id @default(autoincrement())
+  ParentID      Int?
+  VendorID      Int
+  CustomerID    Int
+  CommentText   String
+  Vendor        Vendor    @relation(fields: [VendorID], references: [VendorID])
+  Customer      Customer  @relation(fields: [CustomerID], references: [CustomerID])
+  ParentComment Comment?  @relation("ChildComments", fields: [ParentID], references: [CommentID])
+  ChildComments Comment[] @relation("ChildComments")
+}
+
+model Specialization {
+  SpecializationID Int    @id @default(autoincrement())
+  VendorID         Int
+  Specialization   String
+  Vendor           Vendor @relation(fields: [VendorID], references: [VendorID])
+}
+
+model ItemType {
+  ItemTypeID Int    @id @default(autoincrement())
+  ItemType   String
+  Item       Item[]
 }
 
 model Item {
-  ItemID    Int      @id @default(autoincrement())
-  ItemType  String
-  ItemName  String
-  Quantity  Int
-  OrderItems OrderItem[]
+  ItemID       Int            @id @default(autoincrement())
+  ItemTypeID   Int
+  ItemName     String
+  Price        Float
+  ItemType     ItemType       @relation(fields: [ItemTypeID], references: [ItemTypeID])
+  OrderDetails OrderDetails[]
 }
 
-model OrderItem {
-  OrderItemID Int     @id @default(autoincrement())
+model Order {
+  OrderID       Int            @id @default(autoincrement())
+  CustomerID    Int
+  ServiceTypeID Int
+  OrderDate     DateTime
+  TotalCost     Float
+  PaymentStatus String
+  OrderStatus   String
+  Customer      Customer       @relation(fields: [CustomerID], references: [CustomerID])
+  ServiceType   ServiceType    @relation(fields: [ServiceTypeID], references: [ServiceTypeID])
+  OrderDetails  OrderDetails[]
+  Delivery      Delivery?
+}
+
+model OrderDetails {
+  OrderItemID Int   @id @default(autoincrement())
   OrderID     Int
   ItemID      Int
   Quantity    Int
-  Order       Order   @relation(fields: [OrderID], references: [OrderID])
-  Item        Item    @relation(fields: [ItemID], references: [ItemID])
+  Order       Order @relation(fields: [OrderID], references: [OrderID])
+  Item        Item  @relation(fields: [ItemID], references: [ItemID])
+}
+
+model ServiceType {
+  ServiceTypeID   Int     @id @default(autoincrement())
+  ServiceTypeName String
+  Order           Order[]
 }
 
 model LaundryStaff {
-  StaffID  Int     @id
+  StaffID  Int    @id
   JobTitle String
-  UserID   Int @unique
-  User     User    @relation(fields: [UserID], references: [UserID])
+  UserID   Int    @unique
+  User     User   @relation(fields: [UserID], references: [UserID])
 }
 
 model LaundryMachine {
-  MachineID    Int           @id @default(autoincrement())
+  MachineID    Int          @id @default(autoincrement())
   MachineName  String
   Availability Availability
 }
 
 model Delivery {
-  DeliveryID    Int          @id @default(autoincrement())
-  OrderID       Int         @unique
-  DeliveryDate  DateTime
-  Status        Status
-  Order         Order        @relation(fields: [OrderID], references: [OrderID])
+  DeliveryID   Int      @id @default(autoincrement())
+  OrderID      Int      @unique
+  DeliveryDate DateTime
+  Status       Status
+  Order        Order    @relation(fields: [OrderID], references: [OrderID])
 }
 
 model Admin {
-  AdminID  Int     @id
-  UserID   Int @unique
-  User     User    @relation(fields: [UserID], references: [UserID])
+  AdminID Int  @id
+  UserID  Int  @unique
+  User    User @relation(fields: [UserID], references: [UserID])
 }
 
 enum Role {
@@ -133,7 +158,6 @@ enum Role {
   LAUNDRYSTAFF
   ADMIN
 }
-
 
 enum PaymentStatus {
   PAID

@@ -1,7 +1,9 @@
 
 import React, { Component, useEffect, useState } from 'react'
 import { Text, View,StyleSheet,TouchableOpacity, Image,Alert,FlatList,ScrollView } from 'react-native'
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
+
 import Header from '../Header';
 export default function VendorHome (props) {
   const [vendors,setVendors] = useState([
@@ -93,36 +95,36 @@ export default function VendorHome (props) {
     const navigation = useNavigation();
     const { user } = props.route.params;
     const {token} = props.route.params;
-    console.log(user);
-    useEffect(() => {
-      
-    }, []);
-    const handleLogout = async() => {
-      await fetch('http://192.168.1.107:19001/api/user/logout')
-      .then((res) => res.json())
-      .then((data) => {
-        if(data.message === 'Logged Out!'){
-          navigation.navigate('Login');
-        }
-        else{
-          navigation.navigate('Login');
-        }
-      }
-      )
-      .catch((err) => console.log(err));
-    };
+    console.log(token);
+    const navigateHandler = () => {
+      navigation.navigate('CreateVendorForm', {user:user, token: token })
+    }
+    useFocusEffect(
+      React.useCallback(() => {
+        const onBackPress = () => {
+          if (!user) {
+            return false;
+          }
+          return true;
+        };
+    
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    
+        return () => {
+          BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        };
+      }, [user])
+    );
     return (
       <View style={styles.container}>
-        <Header user={user} handleLogout={handleLogout} />
+        <Header user={user} token={token} />
         <View style={styles.vendorListContainer}>
           <View style={styles.vendorHeader}>
             <Text style={styles.vendorHeaderText}>Your Vendors</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('CreateVendorForm', {user:user, token: token,handleLogout:handleLogout })}>
+            <TouchableOpacity onPress={() => navigateHandler()}>
               <Text style={styles.createVendorText}>Create Vendor</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('CreateVendorForm', {user:user, token: token,handleLogout:handleLogout })}>
-              <Text style={styles.createVendorText}>Add Venue</Text>
-            </TouchableOpacity>
+           
           </View>
           <View style={styles.vendorListContainer}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>

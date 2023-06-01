@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity,Alert,KeyboardAvoidingView } from 'react-native';
+import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
 import logo from '../assets/Logo.png';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Login() {
   const navigation = useNavigation();
-  const [email, setemail] = useState('');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
   const handleLogin = async () => {
-    if (email === '' || password === '' || role === '') {
+    if ((email === '' && username === '') || password === '' || role === '') {
       Alert.alert('Please fill all the fields!');
       return;
     }
-    console.log(email, password, role)
+
+
 
     await fetch('http://192.168.1.107:19001/api/user/login', {
       method: 'POST',
@@ -23,34 +25,38 @@ export default function Login() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        "email": email, "password": password, "role": role
+        "username": username,
+        "password": password,
+        "role": role
       }),
     })
-
       .then((res) => res.json())
       .then((data) => {
-        // console.log(data)
+        console.log(data);
         if (data.message === 'Logged In!') {
           setPassword('');
-          setemail('');
+          setEmail('');
+          setUsername('');
           setRole('');
 
           if (data.user.Role === 'CUSTOMER') {
-            navigation.navigate('CustomerHome', { user: data.user,token:data.token });
+            navigation.navigate('CustomerHome', { user: data.user, token: data.token });
           } else if (data.user.Role === 'VENDOR') {
-            navigation.navigate('VendorHome', { user: data.user,token:data.token });
+            navigation.navigate('VendorHome', { user: data.user, token: data.token });
           } else if (data.user.Role === 'LAUNDRYSTAFF') {
-            navigation.navigate('LaundryStaffHome', { user: data.user,token:data.token });
+            navigation.navigate('LaundryStaffHome', { user: data.user, token: data.token });
           } else if (data.user.Role === 'ADMIN') {
-            navigation.navigate('AdminHome', { user: data.user,token:data.token });
+            navigation.navigate('AdminHome', { user: data.user, token: data.token });
           }
         } else {
           Alert.alert('Login Failed', data.message);
         }
       })
-        .catch((err) => console.log(err));
-
-
+      .catch((err) => {
+        Alert.alert('Login Failed', 'Something went wrong, please try again later!')
+        console.log(err)
+      },
+      );
   };
 
   return (
@@ -60,10 +66,10 @@ export default function Login() {
       <Text style={styles.textLight}>Hello again, you've been missed!</Text>
       <View style={styles.inputView}>
         <TextInput
-          placeholder="Enter email"
+          placeholder="Enter username"
           style={styles.inputTag}
-          value={email}
-          onChangeText={setemail}
+          value={username}
+          onChangeText={setUsername}
         />
         <TextInput
           placeholder="Enter Password"

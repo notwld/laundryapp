@@ -19,7 +19,7 @@ const registerValidation = async (data) => {
 
 const loginValidation = async (data) => {
   const schema = joi.object({
-    email: joi.string().required(),
+    username: joi.string().required(),
     password: joi.string().required(),
     role: joi.string().required(),
 

@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const app = express();
 
 const auth = require('./controllers/auth')
+const profile = require('./controllers/profile')
 
 
 //middlewares
@@ -22,7 +23,9 @@ app.use(session({
 }))
 
 //routes
+app.use('/api/profile', profile)
 app.use('/api/user', auth)
+
 
 //error handler
 app.all('*', (req, res, next) => {

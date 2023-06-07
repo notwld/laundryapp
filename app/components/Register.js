@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderWidth: 1,
     padding: 12,
-    paddingRight: 150,
+    width: 250,
     borderRadius: 7,
   },
   inputView: {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Switch, Button, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import { View, TextInput, Switch, Button, Text, StyleSheet,Alert, ScrollView, TouchableOpacity} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Header from '../Header';
 import cities from "../../../app/cities.json"
@@ -9,7 +9,6 @@ export default function CreateVendorForm(props) {
 
   const [name, setName] = useState('');
   const [rates, setRates] = useState('');
-  const [rating, setRating] = useState('');
   const [location, setLocation] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -17,20 +16,38 @@ export default function CreateVendorForm(props) {
   const [specialization, setSpecialization] = useState('');
   const [deliveryAvailable, setDeliveryAvailable] = useState(false);
   const [workingHours, setWorkingHours] = useState('');
-  const [availability, setAvailability] = useState('');
+  const [availability, setAvailability] = useState(false);
 
-  const handleSubmit = () => {
-    setName('');
-    setRates('');
-    setRating('');
-    setLocation('');
-    setPhone('');
-    setEmail('');
-    setWebsite('');
-    setSpecialization('');
-    setDeliveryAvailable(false);
-    setWorkingHours('');
-    setAvailability('');
+  const createVendor = async () => {
+      console.log(name, rates, location, phone, email, website, specialization, deliveryAvailable, workingHours, availability);
+      const response = await fetch('http://192.168.1.107:19001/api/vendor/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name,
+          rates: rates,
+          location: location,
+          phone: phone,
+          email: email,
+          website: website,
+          specialization: [specialization],
+          deliveryAvailablity: deliveryAvailable,
+          workingHours: workingHours,
+          availability: availability,
+        }),
+      })
+      .then((response) => response.json())
+      .then((json) => {
+        Alert.alert("Vendor Added Successfully");
+        console.log(json);
+      })
+      .catch((error) => {
+        console.error(error);
+      }
+      );
   };
 
   return (
@@ -53,13 +70,7 @@ export default function CreateVendorForm(props) {
             onChangeText={setRates}
             keyboardType="numeric"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Rating"
-            value={rating}
-            onChangeText={setRating}
-            keyboardType="numeric"
-          />
+         
 
           <TextInput
             style={styles.input}
@@ -128,7 +139,7 @@ export default function CreateVendorForm(props) {
             onChangeText={setWorkingHours}
           />
           
-          <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+          <TouchableOpacity onPress={createVendor} style={styles.btn}>
             <Text style={styles.btnText}>Create Vendor</Text>
           </TouchableOpacity>
         </View>

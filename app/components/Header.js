@@ -27,7 +27,8 @@ const handleLogout = async() => {
         {token:token}
           )}>
        <Image source={require('../assets/avatar.jpg')} style={styles.avatar} />
-        <Text style={{fontSize:11}}>View Profile</Text>
+        <Text style={{fontSize:11,
+        color:"white"}}>View Profile</Text>
        </TouchableOpacity>
        </View>
         <View>
@@ -48,7 +49,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#5134FF',
+        borderBottomEndRadius:13,
+        borderBottomStartRadius:13
       },
       avatar: {
         height: 50,
@@ -56,16 +59,19 @@ const styles = StyleSheet.create({
         borderRadius: 100,
       },
       headerText: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: '500',
+        color:"white"
       },
       subHeaderText: {
-        fontSize: 14,
+        fontSize: 17,
         fontWeight: '400',
+        color:"white"
       },
       logoutText: {
         fontSize: 12,
         textDecorationLine: 'underline',
         fontWeight: '500',
+        color:"white"
       },
 })

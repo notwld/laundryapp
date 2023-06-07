@@ -5,154 +5,97 @@ import { useNavigation,useFocusEffect } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
 
 import Header from '../Header';
-export default function VendorHome (props) {
-  const [vendors,setVendors] = useState([
-    {
-      VendorID: 1,
-      Name: "Vendor 1",
-      Rates: 10.5,
-      Rating: 4.2,
-      Address: "123 Main St",
-      Phone: "123-456-7890",
-      Email: "vendor1@example.com",
-      Website: "www.vendor1.com",
-      Specialization: "Specialization 1",
-      DeliveryAvailable: true,
-      WorkingHours: "9 AM - 5 PM",
-      Availability: "Weekdays",
-      Venues: [
-        {
-          VenueID: 1,
-          IsCurtain: true,
-          IsJeans: false,
-          IsBedSheet: true,
-          IsBlanket: false,
-          IsShirt: true,
-          ISTrouser: false,
-          IsShalwar: true,
-          IsKameez: false,
+export default function VendorHome(props) {
+  const [vendors, setVendors] = useState([]);
+  const navigation = useNavigation();
+  const { user } = props.route.params;
+  const { token } = props.route.params;
+
+  const fetchVendors = async () => {
+    try {
+      const response = await fetch('http://192.168.1.107:19001/api/vendor/vendors', {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        // Add more venues if needed
-      ],
-    },
-    {
-      VendorID: 2,
-      Name: "Vendor 2",
-      Rates: 8.5,
-      Rating: 3.8,
-      Address: "456 Elm St",
-      Phone: "987-654-3210",
-      Email: "vendor2@example.com",
-      Website: "www.vendor2.com",
-      Specialization: "Specialization 2",
-      DeliveryAvailable: false,
-      WorkingHours: "10 AM - 6 PM",
-      Availability: "Weekends",
-      Venues: [
-        {
-          VenueID: 2,
-          IsCurtain: false,
-          IsJeans: true,
-          IsBedSheet: false,
-          IsBlanket: true,
-          IsShirt: false,
-          ISTrouser: true,
-          IsShalwar: false,
-          IsKameez: true,
-        },
-        // Add more venues if needed
-      ],
-    },
-    {
-      VendorID: 3,
-      Name: "Vendor 3",
-      Rates: 8.5,
-      Rating: 3.8,
-      Address: "456 Elm St",
-      Phone: "987-654-3210",
-      Email: "vendor2@example.com",
-      Website: "www.vendor2.com",
-      Specialization: "Specialization 2",
-      DeliveryAvailable: false,
-      WorkingHours: "10 AM - 6 PM",
-      Availability: "Weekends",
-      Venues: [
-        {
-          VenueID: 2,
-          IsCurtain: false,
-          IsJeans: true,
-          IsBedSheet: false,
-          IsBlanket: true,
-          IsShirt: false,
-          ISTrouser: true,
-          IsShalwar: false,
-          IsKameez: true,
-        },
-        // Add more venues if needed
-      ],
-    },
-  ]);
-    const navigation = useNavigation();
-    const { user } = props.route.params;
-    const {token} = props.route.params;
-    console.log(token);
-    const navigateHandler = () => {
-      navigation.navigate('CreateVendorForm', {user:user, token: token })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setVendors(data);
+      } else {
+        console.error('Error fetching vendors:', response.status);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
     }
-    useFocusEffect(
-      React.useCallback(() => {
-        const onBackPress = () => {
-          if (!user) {
-            return false;
-          }
-          return true;
-        };
-    
-        BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    
-        return () => {
-          BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-        };
-      }, [user])
-    );
-    return (
-      <View style={styles.container}>
-        <Header user={user} token={token} />
-        <View style={styles.vendorListContainer}>
-          <View style={styles.vendorHeader}>
-            <Text style={styles.vendorHeaderText}>Your Vendors</Text>
-            <TouchableOpacity onPress={() => navigateHandler()}>
-              <Text style={styles.createVendorText}>Create Vendor</Text>
-            </TouchableOpacity>
-           
-          </View>
-          <View style={styles.vendorListContainer}>
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
-              <FlatList
-                data={vendors}
-                renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => {}}>
-                    <View style={styles.vendorItemContainer}>
-                      <Text style={styles.vendorName}>{item.Name}</Text>
-                      <Text style={styles.vendorInfo}>{item.Address}</Text>
-                      <Text style={styles.vendorInfo}>{item.Phone}</Text>
-                      <Text style={styles.vendorInfo}>{item.Email}</Text>
-                      <Text style={styles.vendorInfo}>{item.Website}</Text>
-                      <Text style={styles.vendorInfo}>{item.Specialization}</Text>
-                      <Text style={styles.vendorInfo}>{item.WorkingHours}</Text>
-                      <Text style={styles.vendorInfo}>{item.Availability}</Text>
-                      <Text style={styles.vendorInfo}>{item.DeliveryAvailable.toString()}</Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.VendorID.toString()}
-              />
-            </ScrollView>
-          </View>
-        </View>
-      </View>
-    );
   };
+
+  useEffect(() => {
+    fetchVendors();
+  }, []);
+
+  const navigateHandler = () => {
+    navigation.navigate('CreateVendorForm', { user: user, token: token });
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (!user) {
+          return false;
+        }
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [user])
+  );
+
+  return (
+    <View style={styles.container}>
+      <Header user={user} token={token} />
+      <View style={styles.vendorListContainer}>
+        <View style={styles.vendorHeader}>
+          <Text style={styles.vendorHeaderText}>Your Vendors</Text>
+          <TouchableOpacity onPress={navigateHandler}>
+            <Text style={styles.createVendorText}>Create Vendor</Text>
+          </TouchableOpacity>
+        </View>
+      {
+        vendors.length > 0 ?   <View style={styles.vendorListContainer}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <FlatList
+            data={vendors}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => {}}>
+                <View style={styles.vendorItemContainer}>
+                  <Text style={styles.vendorName}>{item.Name}</Text>
+                  <Text style={styles.vendorInfo}>{item.Address}</Text>
+                  <Text style={styles.vendorInfo}>{item.Phone}</Text>
+                  <Text style={styles.vendorInfo}>{item.Email}</Text>
+                  <Text style={styles.vendorInfo}>{item.Website}</Text>
+                  <Text style={styles.vendorInfo}>{item.Specialization}</Text>
+                  <Text style={styles.vendorInfo}>{item.WorkingHours}</Text>
+                  <Text style={styles.vendorInfo}>{item.Availability}</Text>
+                  <Text style={styles.vendorInfo}>{item.DeliveryAvailable.toString()}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.VendorID.toString()}
+          />
+        </ScrollView>
+      </View> : <View style={styles.errorView}>
+        <Text style={styles.vendorInfo}>No vendors found.</Text>
+              </View>}
+      </View>
+    </View>
+  );
+}
+
   
   const styles = StyleSheet.create({
     container: {
@@ -160,7 +103,12 @@ export default function VendorHome (props) {
       flexDirection: 'column',
      
     },
-   
+   errorView:{
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+   },
      vendorListContainer: {
     flex: 1,
   },
@@ -201,12 +149,12 @@ export default function VendorHome (props) {
       borderWidth: 1,
       backgroundColor: '#fff',
       borderColor: '#ddd',
-      borderRadius: 6,
-      padding: 10,
+      borderRadius: 13,
+      padding: 15,
       margin: 10,
     },
     vendorName: {
-      fontSize: 20,
+      fontSize: 25,
       fontWeight: '500',
     },
     vendorInfo: {

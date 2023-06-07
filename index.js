@@ -8,6 +8,7 @@ const app = express();
 
 const auth = require('./controllers/auth')
 const profile = require('./controllers/profile')
+const vendor = require('./controllers/vendor/curd')
 
 
 //middlewares
@@ -25,6 +26,7 @@ app.use(session({
 //routes
 app.use('/api/profile', profile)
 app.use('/api/user', auth)
+app.use('/api/vendor',vendor)
 
 
 //error handler
@@ -34,6 +36,8 @@ app.all('*', (req, res, next) => {
 app.use((err, req, res, next) => {
     res.status(500).send(err)
 })
+
+
 const host = "192.168.1.107" || process.env.HOST || "localhost"
 const port = process.env.PORT || 3000
 http.createServer(app).listen(port, host, () => {

@@ -24,7 +24,7 @@ model User {
 }
 
 model Customer {
-  CustomerID     Int       @id
+  CustomerID     Int       @id @default(autoincrement())
   CustomerName   String
   BillingAddress String
   PaymentMethod  String
@@ -36,7 +36,7 @@ model Customer {
 }
 
 model Vendor {
-  VendorID          Int              @id
+  VendorID          Int              @id @default(autoincrement())
   UserID            Int              @unique
   Name              String
   Rates             Float
@@ -126,7 +126,7 @@ model ServiceType {
 }
 
 model LaundryStaff {
-  StaffID  Int    @id
+  StaffID  Int    @id @default(autoincrement())
   JobTitle String
   UserID   Int    @unique
   User     User   @relation(fields: [UserID], references: [UserID])
@@ -147,7 +147,7 @@ model Delivery {
 }
 
 model Admin {
-  AdminID Int  @id
+  AdminID Int  @id @default(autoincrement())
   UserID  Int  @unique
   User    User @relation(fields: [UserID], references: [UserID])
 }

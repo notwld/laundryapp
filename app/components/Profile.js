@@ -26,7 +26,8 @@ export default function Profile(
   }, []);
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+     <View style={{ backgroundColor:"white",borderRadius:13,padding:15,alignItems:"center" }}>
+     <View style={styles.header}>
         <Text style={styles.headerText}>Profile</Text>
         <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('UpdateProfile', {
           user: data, token: token
@@ -36,7 +37,7 @@ export default function Profile(
 
       </View>
       <Image source={require('../assets/avatar.jpg')} style={styles.avatar} />
-      <View>
+      <View >
         <View style={styles.profileInfo}>
           <Text style={styles.label}>First Name:</Text>
           <Text style={styles.value}>{data.FirstName}</Text>
@@ -66,6 +67,7 @@ export default function Profile(
           <Text style={styles.value}>{data.Role}</Text>
         </View>
       </View>
+     </View>
     </View>
   )
 }

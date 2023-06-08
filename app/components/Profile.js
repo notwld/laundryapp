@@ -7,26 +7,32 @@ export default function Profile(
   const navigation = useNavigation();
   const { token } = props.route.params;
   const [data, setData] = React.useState({});
-  console.log(token);
+  
   useEffect(() => {
-    fetch('http://192.168.1.107:19001/api/profile/user', {
-  method: 'GET',
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`,
-  },
-})
-  .then((res) =>  res.json())
-  .then((data) => {
-    console.log(data);
-    setData(data);
-  })
-  .catch((err) => console.log(err));
+    const { token } = props.route.params;
+    console.log(token);
 
+    const fetchUser = async ()=>{
+      await fetch('http://192.168.1.107:19001/api/profile/user', {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+        .then((res) =>  res.json())
+        .then((data) => {
+          console.log(data);
+          setData(data);
+        })
+        .catch((err) => console.log(err));
+      
+    }
+    fetchUser()
   }, []);
   return (
     <View style={styles.container}>
-     <View style={{ backgroundColor:"white",borderRadius:13,padding:15,alignItems:"center" }}>
+     <View style={{ backgroundColor:"white",borderRadius:13,alignItems:"center" }}>
      <View style={styles.header}>
         <Text style={styles.headerText}>Profile</Text>
         <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('UpdateProfile', {
@@ -37,7 +43,7 @@ export default function Profile(
 
       </View>
       <Image source={require('../assets/avatar.jpg')} style={styles.avatar} />
-      <View >
+      <View style={{ paddingBottom: 20 }}>
         <View style={styles.profileInfo}>
           <Text style={styles.label}>First Name:</Text>
           <Text style={styles.value}>{data.FirstName}</Text>
@@ -91,6 +97,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   header: {
+    padding:14,
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
@@ -100,7 +107,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   btnText: {
-    padding: 7,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
     color: "white",
     backgroundColor: "blue",
     borderRadius: 5,

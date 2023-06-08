@@ -1,8 +1,16 @@
-import React, { Component, useFocusEffect, useState } from 'react'
-import { Text, View,BackHandler,StyleSheet, FlatList, ScrollView, Image } from 'react-native'
+import React, { Component,  useEffect,  useState } from 'react'
+import { Text, View,BackHandler,StyleSheet, FlatList, ScrollView, Image, TouchableOpacity } from 'react-native'
 import Header from '../Header';
+import {useFocusEffect,useNavigation} from '@react-navigation/native';
 
 export default function AdminHome (props) {
+  const {user} = props.route.params;
+  const {token} = props.route.params;
+  const navigation = useNavigation();
+  const navigateTo = (screen) => {
+    navigation.navigate(screen, { user: user, token: token });
+  }
+
   const data = [
     { icon: require("../../assets/box-solid.png"), name: 'Orders' },
     { icon: require("../../assets/users-solid.png"), name: 'Customers' },
@@ -11,24 +19,26 @@ export default function AdminHome (props) {
     { icon: require("../../assets/soap-solid.png"), name: 'Machines' },
     { icon: require("../../assets/user-regular.png"), name: 'Vendors' },
   ];
-  const { user } = props.route.params;
-  const { token } = props.route.params;
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const onBackPress = () => {
-  //       if (!user) {
-  //         return false;
-  //       }
-  //       return true;
-  //     };
+  useEffect(() => {
+    const {user} = props.route.params;
+  const {token} = props.route.params;
+  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (!user) {
+          return false;
+        }
+        return true;
+      };
 
-  //     BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-  //     return () => {
-  //       BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-  //     };
-  //   }, [user])
-  // );
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [user])
+  );
     return (
       <View>
        <Header user={user} token={token} />
@@ -37,10 +47,12 @@ export default function AdminHome (props) {
         data={data}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => 
-        <View style={styles.card}>
+       <TouchableOpacity onPress={() => navigateTo(item.name)} style={styles.card}>
+         <View>
           <Image source={item.icon} style={styles.img} />
           <Text style={styles.cardText}>{item.name}</Text>
         </View>
+       </TouchableOpacity>
         }
         numColumns={2}
       />
@@ -57,13 +69,13 @@ export default function AdminHome (props) {
       padding: 10,
     },
     cardText: {
-      fontSize: 20,
+      fontSize: 14,
       fontWeight: 500,
       textAlign: 'center',
     },
     img: {
-      width: 100,
-      height: 100,
+      width: 75,
+      height: 75,
       marginBottom: 10,
       objectFit: 'contain',
     },

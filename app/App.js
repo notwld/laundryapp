@@ -11,6 +11,12 @@ import LaundryStaffHome from './components/LaundryStaff/LaundryStaffHome';
 import CreateVendorForm from './components/Vendor/CreateVendorForm';
 import Profile from './components/Profile';
 import UpdateProfileScreen from './components/UpdateProfile';
+import Orders from './components/Admin/Orders';
+import Machines from './components/Admin/Machines';
+import Vendors from './components/Admin/Vendors';
+import Sales from './components/Admin/Sales';
+import Staff from './components/Admin/Staff';
+import Customers from './components/Admin/Customers';
 
 
 const Stack = createNativeStackNavigator();
@@ -30,6 +36,13 @@ export default function App() {
         <Stack.Screen name="CreateVendorForm" component={CreateVendorForm}/>
         <Stack.Screen name="Profile" component={Profile}/>
         <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen}/>
+        <Stack.Screen name="Customers" component={Customers}/>
+        <Stack.Screen name="Staff" component={Staff}/>
+        <Stack.Screen name="Sales" component={Sales}/>
+        <Stack.Screen name="Vendors" component={Vendors}/>
+        <Stack.Screen name="Machines" component={Machines}/>
+        <Stack.Screen name="Orders" component={Orders} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

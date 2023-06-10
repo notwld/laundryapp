@@ -7,169 +7,156 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  UserID       Int           @id @default(autoincrement())
-  FirstName    String
-  LastName     String
-  Address      String
-  Phone        String
-  Email        String
-  Username     String
-  Password     String
-  Role         Role
-  Customer     Customer?
-  Vendor       Vendor?
-  LaundryStaff LaundryStaff?
-  Admin        Admin?
+model admin {
+  AdminID Int  @id
+  UserID  Int? @unique(map: "UserID")
 }
 
-model Customer {
-  CustomerID     Int       @id @default(autoincrement())
-  CustomerName   String
-  BillingAddress String
-  PaymentMethod  String
-  UserID         Int       @unique
-  Orders         Order[]
-  User           User      @relation(fields: [UserID], references: [UserID])
-  Reviews        Reviews[]
-  Comment        Comment[]
+model comment {
+  CommentID   Int     @id @default(autoincrement())
+  ParentID    Int?
+  VendorID    Int?
+  CustomerID  Int?
+  CommentText String? @db.Text
 }
 
-model Vendor {
-  VendorID          Int              @id @default(autoincrement())
-  UserID            Int              @unique
-  Name              String
-  Rates             Float
-  Location          String
-  Phone             String
-  Email             String
-  Website           String?
-  DeliveryAvailable Boolean
-  WorkingHours      String?
-  Availability      String?
-  User              User             @relation(fields: [UserID], references: [UserID])
-  Reviews           Reviews[]
-  Specialization    Specialization[]
-  Comment           Comment[]
+model customer {
+  CustomerID     Int     @id @default(autoincrement())
+  CustomerName   String? @db.VarChar(255)
+  BillingAddress String? @db.VarChar(255)
+  PaymentMethod  String? @db.VarChar(255)
+  UserID         Int?    @unique(map: "UserID")
 }
 
-model Reviews {
-  ReviewID   Int      @id @default(autoincrement())
-  VendorID   Int
-  CustomerID Int
-  ReviewText String
-  Vendor     Vendor   @relation(fields: [VendorID], references: [VendorID])
-  Customer   Customer @relation(fields: [CustomerID], references: [CustomerID])
+model delivery {
+  DeliveryID   Int       @id @default(autoincrement())
+  OrderID      Int?      @unique(map: "OrderID")
+  DeliveryDate DateTime? @db.DateTime(0)
+  Status       String?   @db.VarChar(255)
 }
 
-model Comment {
-  CommentID     Int       @id @default(autoincrement())
-  ParentID      Int?
-  VendorID      Int
-  CustomerID    Int
-  CommentText   String
-  Vendor        Vendor    @relation(fields: [VendorID], references: [VendorID])
-  Customer      Customer  @relation(fields: [CustomerID], references: [CustomerID])
-  ParentComment Comment?  @relation("ChildComments", fields: [ParentID], references: [CommentID])
-  ChildComments Comment[] @relation("ChildComments")
+model item {
+  ItemID     Int     @id @default(autoincrement())
+  ItemTypeID Int?
+  ItemName   String? @db.VarChar(255)
+  Price      Float?  @db.Float
 }
 
-model Specialization {
-  SpecializationID Int    @id @default(autoincrement())
-  VendorID         Int
-  Specialization   String
-  Vendor           Vendor @relation(fields: [VendorID], references: [VendorID])
+model itemtype {
+  ItemTypeID Int     @id @default(autoincrement())
+  ItemType   String? @db.VarChar(255)
 }
 
-model ItemType {
-  ItemTypeID Int    @id @default(autoincrement())
-  ItemType   String
-  Item       Item[]
+model laundrymachine {
+  MachineID    Int     @id @default(autoincrement())
+  MachineName  String? @db.VarChar(255)
+  Availability String? @db.VarChar(255)
 }
 
-model Item {
-  ItemID       Int            @id @default(autoincrement())
-  ItemTypeID   Int
-  ItemName     String
-  Price        Float
-  ItemType     ItemType       @relation(fields: [ItemTypeID], references: [ItemTypeID])
-  OrderDetails OrderDetails[]
+model laundrystaff {
+  StaffID  Int     @id @default(autoincrement())
+  JobTitle String? @db.VarChar(255)
+  UserID   Int?    @unique(map: "UserID")
 }
 
-model Order {
-  OrderID       Int            @id @default(autoincrement())
-  CustomerID    Int
-  ServiceTypeID Int
-  OrderDate     DateTime
-  TotalCost     Float
-  PaymentStatus String
-  OrderStatus   String
-  Customer      Customer       @relation(fields: [CustomerID], references: [CustomerID])
-  ServiceType   ServiceType    @relation(fields: [ServiceTypeID], references: [ServiceTypeID])
-  OrderDetails  OrderDetails[]
-  Delivery      Delivery?
+model order {
+  OrderID       Int       @id @default(autoincrement())
+  CustomerID    Int?
+  ServiceTypeID Int?
+  OrderDate     DateTime? @db.DateTime(0)
+  TotalCost     Float?    @db.Float
+  PaymentStatus String?   @db.VarChar(255)
+  OrderStatus   String?   @db.VarChar(255)
+  clothes       clothes[]
 }
 
-model OrderDetails {
-  OrderItemID Int   @id @default(autoincrement())
-  OrderID     Int
-  ItemID      Int
-  Quantity    Int
-  Order       Order @relation(fields: [OrderID], references: [OrderID])
-  Item        Item  @relation(fields: [ItemID], references: [ItemID])
+model orderdetails {
+  OrderItemID Int  @id @default(autoincrement())
+  OrderID     Int?
+  ItemID      Int?
+  Quantity    Int?
 }
 
-model ServiceType {
+model reviews {
+  ReviewID   Int     @id @default(autoincrement())
+  VendorID   Int?
+  CustomerID Int?
+  Rating     Float?  @db.Float
+  ReviewText String? @db.Text
+}
+
+model servicetype {
   ServiceTypeID   Int     @id @default(autoincrement())
-  ServiceTypeName String
-  Order           Order[]
+  ServiceTypeName String? @db.VarChar(255)
 }
 
-model LaundryStaff {
-  StaffID  Int    @id @default(autoincrement())
-  JobTitle String
-  UserID   Int    @unique
-  User     User   @relation(fields: [UserID], references: [UserID])
+model specialization {
+  SpecializationID Int      @id @default(autoincrement())
+  VendorID         Int?
+  Name             String?  @db.VarChar(255)
+  Rates            Float?   @db.Float
+  vendor           vendor[]
 }
 
-model LaundryMachine {
-  MachineID    Int          @id @default(autoincrement())
-  MachineName  String
-  Availability Availability
+model user {
+  UserID         Int        @id @default(autoincrement())
+  FirstName      String?    @db.VarChar(255)
+  LastName       String?    @db.VarChar(255)
+  Address        String?    @db.VarChar(255)
+  Phone          String?    @db.VarChar(255)
+  Email          String?    @db.VarChar(255)
+  Username       String?    @db.VarChar(255)
+  Password       String?    @db.VarChar(255)
+  Role           user_Role?
+  CustomerID     Int?
+  VendorID       Int?
+  LaundryStaffID Int?
+  AdminID        Int?
 }
 
-model Delivery {
-  DeliveryID   Int      @id @default(autoincrement())
-  OrderID      Int      @unique
-  DeliveryDate DateTime
-  Status       Status
-  Order        Order    @relation(fields: [OrderID], references: [OrderID])
+model vendor {
+  VendorID          Int             @id @default(autoincrement())
+  UserID            Int?            @unique(map: "UserID")
+  Name              String?         @db.VarChar(255)
+  Location          String?         @db.VarChar(255)
+  Phone             String?         @db.VarChar(255)
+  Email             String?         @db.VarChar(255)
+  Website           String?         @db.VarChar(255)
+  DeliveryAvailable Boolean?
+  WorkingHours      String?         @db.VarChar(255)
+  Availability      Boolean?
+  SpecializationID  Int?
+  averagerating     averagerating[]
+  specialization    specialization? @relation(fields: [SpecializationID], references: [SpecializationID], onDelete: NoAction, onUpdate: NoAction, map: "vendor_ibfk_1")
+
+  @@index([SpecializationID], map: "SpecializationID")
 }
 
-model Admin {
-  AdminID Int  @id @default(autoincrement())
-  UserID  Int  @unique
-  User    User @relation(fields: [UserID], references: [UserID])
+model averagerating {
+  AverageRatingID Int     @id @default(autoincrement())
+  VendorID        Int?
+  AverageRating   Float?  @db.Float
+  vendor          vendor? @relation(fields: [VendorID], references: [VendorID], onDelete: NoAction, onUpdate: NoAction, map: "averagerating_ibfk_1")
+
+  @@index([VendorID], map: "VendorID")
 }
 
-enum Role {
+model clothes {
+  ClothesID Int      @id @default(autoincrement())
+  OrderID   Int?
+  IsShalwar Boolean?
+  IsKameez  Boolean?
+  IsPant    Boolean?
+  IsShirt   Boolean?
+  IsJeans   Boolean?
+  order     order?   @relation(fields: [OrderID], references: [OrderID], onDelete: NoAction, onUpdate: NoAction, map: "clothes_ibfk_1")
+
+  @@index([OrderID], map: "OrderID")
+}
+
+enum user_Role {
   CUSTOMER
   VENDOR
   LAUNDRYSTAFF
   ADMIN
-}
-
-enum PaymentStatus {
-  PAID
-  UNPAID
-}
-
-enum Availability {
-  AVAILABLE
-  UNAVAILABLE
-}
-
-enum Status {
-  DELIVERED
-  UNDELIVERED
 }

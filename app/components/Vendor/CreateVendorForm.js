@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, TextInput, Switch, Button, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Header from '../Header';
 import cities from '../../../app/cities.json';
 import baseURL from '../../baseURL';
+import { useNavigation } from '@react-navigation/native';
 
 export default function CreateVendorForm(props) {
   const { user, token } = props.route.params;
-
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [rates, setRates] = useState('');
   const [location, setLocation] = useState('');
@@ -15,44 +16,64 @@ export default function CreateVendorForm(props) {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [specialization, setSpecialization] = useState('');
+  const [specializationData, setSpecializationData] = useState([]);
   const [deliveryAvailable, setDeliveryAvailable] = useState(false);
   const [workingHours, setWorkingHours] = useState('');
   const [availability, setAvailability] = useState(false);
 
   const createVendor = async () => {
     console.log(name, rates, location, phone, email, website, specialization, deliveryAvailable, workingHours, availability);
-    try {
+   
       const response = await fetch(baseURL.URL + 'vendor/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name: name,
-          rates: rates,
-          location: location,
-          phone: phone,
-          email: email,
-          website: website,
-          specialization: [specialization],
-          deliveryAvailablity: deliveryAvailable,
-          workingHours: workingHours,
-          availability: availability,
+          "name": name,
+          "location": location,
+          "phone": phone,
+          "email": email,
+          "website": website,
+          "specializationID": specialization,
+          "deliveryAvailability": deliveryAvailable,
+          "workingHours": workingHours,
+          "availability": availability,
         }),
-      });
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          Alert.alert('Success', 'Vendor created successfully');
+          navigation.navigate('VendorHome', { user: user, token: token });
 
-      if (response.ok) {
-        const json = await response.json();
-        Alert.alert('Vendor Added Successfully');
-        console.log(json);
-      } else {
-        console.error('Error creating vendor:', response.status);
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-    }
+        }
+        )
+        .catch((err) => console.log(err));
+
   };
+  useEffect(() => {
+    const getSpecialization = async () => {
+      const response = await fetch(baseURL.URL + 'vendor/specialization', {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          
+          return res.json();
+
+        })
+        .then((data) => {
+          console.log(data);
+          setSpecializationData(data);
+        }
+        )
+        .catch((err) => console.log(err));
+    }
+    getSpecialization();
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -67,14 +88,7 @@ export default function CreateVendorForm(props) {
             value={name}
             onChangeText={setName}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Rates"
-            value={rates}
-            onChangeText={setRates}
-            keyboardType="numeric"
-          />
-
+          
           <TextInput
             style={styles.input}
             placeholder="Phone"
@@ -101,10 +115,9 @@ export default function CreateVendorForm(props) {
             style={styles.picker}
           >
             <Picker.Item label="Select Specialization" value="" />
-            <Picker.Item label="Washing" value="Washing" />
-            <Picker.Item label="Ironing" value="Ironing" />
-            <Picker.Item label="Dry Cleaning" value="Dry Cleaning" />
-            <Picker.Item label="Alterations" value="Alterations" />
+            {specializationData.map((specialization, index) => (
+              <Picker.Item key={index} label={`${specialization.Name} - $${specialization.Rates}`} value={specialization.SpecializationID} />
+            ))}
           </Picker>
           <Picker
             selectedValue={location}

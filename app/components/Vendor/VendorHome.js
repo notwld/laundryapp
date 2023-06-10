@@ -12,27 +12,25 @@ export default function VendorHome(props) {
   const { token } = props.route.params;
 
   const fetchVendors = async () => {
-    try {
+   
       const response = await fetch(baseURL.URL + 'vendor/vendors', {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
-      });
+      })
+        .then((res) => res.json()) 
+        .then((data) => {
+          console.log(data);
+          setVendors(data);
+        }
+        )
+        .catch((err) => console.log(err));
 
-      if (response.ok) {
-        const data = await response.json();
-        setVendors(data);
-      } else {
-        console.error('Error fetching vendors:', response.status);
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-    }
   };
 
   useEffect(() => {
     fetchVendors();
-  }, []);
+  }, [user, token]);
 
   const navigateHandler = () => {
     navigation.navigate('CreateVendorForm', { user: user, token: token });
@@ -75,10 +73,10 @@ export default function VendorHome(props) {
                   <Text style={styles.vendorInfo}>{item.Phone}</Text>
                   <Text style={styles.vendorInfo}>{item.Email}</Text>
                   <Text style={styles.vendorInfo}>{item.Website}</Text>
-                  <Text style={styles.vendorInfo}>{item.Specialization}</Text>
+                  <Text style={styles.vendorInfo}>{item.specialization}</Text>
                   <Text style={styles.vendorInfo}>{item.WorkingHours}</Text>
                   <Text style={styles.vendorInfo}>{item.Availability}</Text>
-                  <Text style={styles.vendorInfo}>{item.DeliveryAvailable.toString()}</Text>
+                  <Text style={styles.vendorInfo}>{item.DeliveryAvailable}</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -121,8 +119,9 @@ const styles = StyleSheet.create({
   },
   createVendorText: {
     padding: 5,
-    backgroundColor: 'orange',
+    backgroundColor: 'blue',
     borderRadius: 5,
+    color: '#fff',
     fontSize: 12,
     fontWeight: '500',
   },

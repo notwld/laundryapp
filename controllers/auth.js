@@ -46,6 +46,7 @@ router.post('/register', async (req, res, next) => {
 
 
 router.post('/login', async (req, res, next) => {
+    console.log("WORKING")
     if (!req.session.user) {
         const user = await prisma.user.findFirst({
             where: {
@@ -63,7 +64,7 @@ router.post('/login', async (req, res, next) => {
 
                 const token = jwt.sign(user.UserID, process.env.SECRET_TOKEN);
                 const session = req.session;
-                session.token = token;
+                // session.token = token;
                 session.user = user.UserID;
                 session.role = user.Role;
                 session.userName = user.Username;

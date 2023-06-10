@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
 })
 
 
-const host = "192.168.1.107" || process.env.HOST || "localhost"
+const host = process.env.HOST || "localhost"
 const port = process.env.PORT || 3000
 http.createServer(app).listen(port, host, () => {
     console.log(`Server running at http://${host}:${port}/`);

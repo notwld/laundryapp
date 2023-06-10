@@ -1,136 +1,146 @@
-const { PrismaClient } = require('@prisma/client')
+const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient()
-const router = require("express").Router()
-const isAuthenticated = require('../../middlewares/isAuthenticated')
+const prisma = new PrismaClient();
+const router = require('express').Router();
+const isAuthenticated = require('../../middlewares/isAuthenticated');
 
-router.get("/vendors",isAuthenticated, async (req, res, next) => {
-    const vendors = await prisma.vendor.findMany()
-    if (!vendors) return res.status(400).json({ message: "No vendors found!" })
-    return res.status(200).json(vendors)
-})
 
-router.post("/add", isAuthenticated, async (req, res, next) => {
-    try {
-      const vendor = await prisma.vendor.findFirst({
-        where: {
-          Name: req.body.name
-        }
-      });
-  
-      if (vendor) {
-        return res.status(400).send("Vendor already exists!");
-      }
-  
-      const addVendor = await prisma.vendor.create({
-        data: {
-          Name: req.body.name,
-          Rates: parseFloat(req.body.rates),
-          Location: req.body.location,
-          Phone: req.body.phone,
-          Email: req.body.email,
-          Website: req.body.website,
-          DeliveryAvailable: req.body.deliveryAvailablity,
-          WorkingHours: req.body.workingHours,
-          Availability: String(req.body.availability),
-          Specialization: {
-            create: req.body.specialization.map(specialization => ({
-              Specialization: specialization
-            }))
-          },
-          User: {
-            connect: {
-              UserID: parseInt(req.session.user)
-          }
-          }
-        }
-      });
-  
+router.get("/specialization", isAuthenticated, async (req, res, next) => {
+  const specialization = await prisma.specialization.findMany({})
+    .then((specialization) => {
+      return res.status(200).json(specialization);
+    }
+    )
+    .catch((err) => {
+      return res.status(500).json({ message: err });
+    }
+    );
+});
+
+router.get('/vendors', isAuthenticated, async (req, res, next) => {
+  const vendors = await prisma.vendor.findMany({})
+    .then((vendors) => {
+      return res.status(200).json(vendors);
+    }
+    )
+    .catch((err) => {
+      return res.status(500).json({ message: err });
+    }
+    );
+});
+
+router.post('/add', isAuthenticated, async (req, res, next) => {
+  // if (req.session.user) {
+    console.log(req.body);
+    const vendor = await prisma.vendor.findFirst({
+      where: {
+        Name: req.body.name,
+      },
+    });
+    if (vendor) return res.status(400).json({ message: 'Vendor already exists!' });
+
+
+    const addVendor = await prisma.vendor.create({
+      data: {
+        Name: req.body.name,
+        Location: req.body.location,
+        Phone: req.body.phone,
+        Email: req.body.email,
+        Website: req.body.website,
+        DeliveryAvailable: req.body.deliveryAvailability,
+        WorkingHours: req.body.workingHours,
+        Availability: req.body.availability,
+        SpecializationID: parseInt(req.body.specializationID),
+        UserID: parseInt(req.session.user),
+      
+      },
+    }).then((vendor) => {
+   
+
       return res.status(200).json({
-        message: "Vendor Added!",
-        addedVendor: addVendor.Name
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: err.message
+        message: 'Vendor Added!',
+        addedVendor: vendor.Name,
       });
     }
-  });
+    ).catch((err) => {
+      return res.status(500).json({ message: "Vendor can't be added for some reason "+err });
+    }
+    );
+  // } else { return res.status(400).json({ message: 'User not logged in!' }); }
+});
 
-
-router.post("/update", isAuthenticated, async (req, res, next) => {
-    try {
-      const vendor = await prisma.vendor.findFirst({
-        where: {
-          Name: req.body.name
-        }
-      });
-  
+router.post('/update', isAuthenticated, async (req, res, next) => {
+  if (req.session.user) {
+    const vendor = await prisma.vendor.findFirst({
+      where: {
+        Name: req.body.name,
+      },
+    })
+    .then((vendor) => {
       if (!vendor) {
-        return res.status(400).send("Vendor doesn't exist!");
+        return res.status(400).json({
+          message: "Vendor doesn't exist!",
+        });
       }
-  
-      const updateVendor = await prisma.vendor.update({
-        where: {
-          Name: req.body.name
+    })
+    .catch((err) => {
+      return res.status(500).json({ message: err.message });
+    });
+
+
+    const updateVendor = await prisma.vendor.update({
+      where: {
+        Name: req.body.name,
+      },
+      data: {
+        Location: req.body.location,
+        Phone: req.body.phone,
+        Email: req.body.email,
+        Website: req.body.website,
+        DeliveryAvailable: req.body.deliveryAvailable,
+        WorkingHours: req.body.workingHours,
+        Availability: req.body.availability,
+        specialization: {
+          set: req.body.specialization.map((specialization) => ({
+            Name: specialization,
+          })),
         },
-        data: {
-          Rates: req.body.rates,
-          Location: req.body.location,
-          Phone: req.body.phone,
-          Email: req.body.email,
-          Website: req.body.website,
-          DeliveryAvailable: req.body.deliveryAvailable,
-          WorkingHours: req.body.workingHours,
-          Availability: req.body.availability,
-          Specialization: {
-            set: req.body.specialization.map(specialization => ({
-              Specialization: specialization
-            }))
-          }
-        }
-      });
-  
+      },
+    }).then((vendor) => {
       return res.status(200).json({
-        message: "Vendor Updated!",
-        updatedVendor: updateVendor.Name
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: err.message
+        message: 'Vendor Updated!',
+        updatedVendor: vendor.Name,
       });
     }
-  } 
-);
+    ).catch((err) => {
+      return res.status(500).json({ message: err.message });
+    }
+    );
+  } else {
+    return res.status(400).json({ message: 'User not logged in!' });
+  }
+});
 
-
-router.get("/delete", isAuthenticated, async (req, res, next) => {
-    try {
-      const vendor = await prisma.vendor.findFirst({
-        where: {
-          Name: req.body.name
-        }
-      });
-  
+router.post('/delete', isAuthenticated, async (req, res, next) => {
+  if (req.session.user) {
+    const vendor = await prisma.vendor.findFirst({
+      where: {
+        Name: req.body.name,
+      },
+    })
+    .then((vendor) => {
       if (!vendor) {
-        return res.status(400).send("Vendor doesn't exist!");
+        return res.status(400).json({
+          message: "Vendor doesn't exist!",
+        });
       }
-  
-      const deleteVendor = await prisma.vendor.delete({
-        where: {
-          Name: req.body.name
-        }
-      });
-  
-      return res.status(200).json({
-        message: "Vendor Deleted!",
-        deletedVendor: deleteVendor.Name
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: err.message
-      });
-    }
-  });
-  
-module.exports = router
+    })
+    .catch((err) => {
+      return res.status(500).json({ message: err.message });
+    });
+  } else {
+    return res.status(400).json({ message: 'User not logged in!' });
+  }
+});
+
+module.exports = router;

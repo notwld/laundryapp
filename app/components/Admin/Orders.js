@@ -36,38 +36,38 @@ export default function Orders(props) {
     return (
         <View style={styles.container}>
             <Header user={user} token={token} />
-           <View style={{
+            <View style={{
                 padding: 16,
-           }}>
-            <Text style={{
-                textAlign: 'center',
-                fontSize: 31,
-                fontWeight: 'bold',
-                marginBottom: 16,
             }}>
-                Orders
-            </Text>
-           {orders.map((order) => (
-                <View key={order.orderID} style={styles.card}>
-                    <Text style={styles.customerName}>{order.customerName}</Text>
-                    <Text style={styles.orderDate}>Order Date: {order.orderDate}</Text>
-                    <Text style={styles.totalCost}>Total Cost: {order.totalCost}</Text>
-                    <Text style={styles.orderStatus}>Status: {order.orderStatus}</Text>
-                    <TouchableOpacity
-                        style={styles.editButton}
-                        onPress={() => handleEditOrder(order.orderID)}
-                    >
-                        <Text style={styles.buttonText}>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.deleteButton}
-                        onPress={() => handleDeleteOrder(order.orderID)}
-                    >
-                        <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity>
-                </View>
-            ))}
-           </View>
+                <Text style={{
+                    textAlign: 'center',
+                    fontSize: 31,
+                    fontWeight: 'bold',
+                    marginBottom: 16,
+                }}>
+                    Orders
+                </Text>
+                {orders.map((order) => (
+                    <View key={order.orderID} style={styles.card}>
+                        <Text style={styles.customerName}>{order.customerName}</Text>
+                        <Text style={styles.orderDate}>Order Date: {order.orderDate}</Text>
+                        <Text style={styles.totalCost}>Total Cost: {order.totalCost}</Text>
+                        <Text style={styles.orderStatus}>Status: {order.orderStatus}</Text>
+                        <TouchableOpacity
+                            style={styles.editButton}
+                            onPress={() => handleEditOrder(order.orderID)}
+                        >
+                            <Text style={styles.buttonText}>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.deleteButton}
+                            onPress={() => handleDeleteOrder(order.orderID)}
+                        >
+                            <Text style={styles.buttonText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </View>
         </View>
     )
 }

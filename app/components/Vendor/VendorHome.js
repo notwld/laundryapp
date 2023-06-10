@@ -1,10 +1,10 @@
-
-import React, { Component, useEffect, useState } from 'react'
-import { Text, View,StyleSheet,TouchableOpacity, Image,Alert,FlatList,ScrollView } from 'react-native'
-import { useNavigation,useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
-
+import baseURL from '../../baseURL';
 import Header from '../Header';
+
 export default function VendorHome(props) {
   const [vendors, setVendors] = useState([]);
   const navigation = useNavigation();
@@ -13,7 +13,7 @@ export default function VendorHome(props) {
 
   const fetchVendors = async () => {
     try {
-      const response = await fetch('http://192.168.1.107:19001/api/vendor/vendors', {
+      const response = await fetch(baseURL.URL + 'vendor/vendors', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,13 +65,10 @@ export default function VendorHome(props) {
             <Text style={styles.createVendorText}>Create Vendor</Text>
           </TouchableOpacity>
         </View>
-      {
-        vendors.length > 0 ?   <View style={styles.vendorListContainer}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <FlatList
-            data={vendors}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => {}}>
+        {vendors.length > 0 ? (
+          <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            {vendors.map((item) => (
+              <TouchableOpacity key={item.VendorID} onPress={() => {}}>
                 <View style={styles.vendorItemContainer}>
                   <Text style={styles.vendorName}>{item.Name}</Text>
                   <Text style={styles.vendorInfo}>{item.Address}</Text>
@@ -84,81 +81,65 @@ export default function VendorHome(props) {
                   <Text style={styles.vendorInfo}>{item.DeliveryAvailable.toString()}</Text>
                 </View>
               </TouchableOpacity>
-            )}
-            keyExtractor={(item) => item.VendorID.toString()}
-          />
-        </ScrollView>
-      </View> : <View style={styles.errorView}>
-        <Text style={styles.vendorInfo}>No vendors found.</Text>
-              </View>}
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={styles.errorView}>
+            <Text style={styles.vendorInfo}>No vendors found.</Text>
+          </View>
+        )}
       </View>
     </View>
   );
 }
 
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      flexDirection: 'column',
-     
-    },
-   errorView:{
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  errorView: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-
-   },
-     vendorListContainer: {
+  },
+  vendorListContainer: {
     flex: 1,
   },
   scrollViewContent: {
-    flexGrow: 1,
     paddingBottom: 50,
   },
-    vendorHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 15,
-    },
-    vendorHeaderText: {
-      fontSize: 20,
-      fontWeight: '500',
-    },
-    createVendorText: {
-      padding:5,
-      color:"white",
-      backgroundColor:"blue",
-      borderRadius:5,
-      fontSize: 12,
-      fontWeight: '500',
-    },
-    scrollView: {
-      flex: 1,
-       // Add paddingBottom to create extra space at the bottom
-    },
-    vendorListContainer: {
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      padding: 6,
-      paddingTop: 0,
-      paddingBottom: 100,
-    },
-    vendorItemContainer: {
-      borderWidth: 1,
-      backgroundColor: '#fff',
-      borderColor: '#ddd',
-      borderRadius: 13,
-      padding: 15,
-      margin: 10,
-    },
-    vendorName: {
-      fontSize: 25,
-      fontWeight: '500',
-    },
-    vendorInfo: {
-      fontSize: 14,
-      fontWeight: '400',
-    },
-  });
+  vendorHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+  },
+  vendorHeaderText: {
+    fontSize: 20,
+    fontWeight: '500',
+  },
+  createVendorText: {
+    padding: 5,
+    backgroundColor: 'orange',
+    borderRadius: 5,
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  vendorItemContainer: {
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
+    borderRadius: 13,
+    padding: 15,
+    margin: 10,
+  },
+  vendorName: {
+    fontSize: 25,
+    fontWeight: '500',
+  },
+  vendorInfo: {
+    fontSize: 14,
+    fontWeight: '400',
+  },
+});

@@ -20,7 +20,7 @@ const UpdateProfileScreen = (props) => {
 
   const handleUpdateProfile = async () => {
     const response = await fetch(
-      `http://192.168.1.107:19001/api/profile/update/`,
+      `http://192.168.124.59:19001/api/profile/update/`,
         {   
             method: 'POST',
             headers: {

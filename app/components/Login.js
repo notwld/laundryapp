@@ -3,6 +3,7 @@ import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity, Alert, Keyb
 import logo from '../assets/Logo.png';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import baseURL from '../baseURL';
 
 export default function Login() {
   const navigation = useNavigation();
@@ -19,7 +20,7 @@ export default function Login() {
 
 
 
-    await fetch('http://192.168.1.107:19001/api/user/login', {
+    await fetch(baseURL.URL+'user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, TextInput, Switch, Button, Text, StyleSheet,Alert, ScrollView, TouchableOpacity} from 'react-native';
+import { View, TextInput, Switch, Button, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Header from '../Header';
-import cities from "../../../app/cities.json"
+import cities from '../../../app/cities.json';
+import baseURL from '../../baseURL';
 
 export default function CreateVendorForm(props) {
-  const { user, handleLogout, token } = props.route.params;
+  const { user, token } = props.route.params;
 
   const [name, setName] = useState('');
   const [rates, setRates] = useState('');
@@ -19,8 +20,9 @@ export default function CreateVendorForm(props) {
   const [availability, setAvailability] = useState(false);
 
   const createVendor = async () => {
-      console.log(name, rates, location, phone, email, website, specialization, deliveryAvailable, workingHours, availability);
-      const response = await fetch('http://192.168.1.107:19001/api/vendor/add', {
+    console.log(name, rates, location, phone, email, website, specialization, deliveryAvailable, workingHours, availability);
+    try {
+      const response = await fetch(baseURL.URL + 'vendor/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,25 +40,27 @@ export default function CreateVendorForm(props) {
           workingHours: workingHours,
           availability: availability,
         }),
-      })
-      .then((response) => response.json())
-      .then((json) => {
-        Alert.alert("Vendor Added Successfully");
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        Alert.alert('Vendor Added Successfully');
         console.log(json);
-      })
-      .catch((error) => {
-        console.error(error);
+      } else {
+        console.error('Error creating vendor:', response.status);
       }
-      );
+    } catch (error) {
+      console.error('Network error:', error);
+    }
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <Header user={user} handleLogout={handleLogout} />
+      <Header user={user} token={token} />
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', padding: 10 }}>Create Vendor</Text>
+        <Text style={styles.heading}>Create Vendor</Text>
 
-        <View style={{ padding: 20 }}>
+        <View style={styles.formContainer}>
           <TextInput
             style={styles.input}
             placeholder="Name"
@@ -70,7 +74,6 @@ export default function CreateVendorForm(props) {
             onChangeText={setRates}
             keyboardType="numeric"
           />
-         
 
           <TextInput
             style={styles.input}
@@ -84,7 +87,7 @@ export default function CreateVendorForm(props) {
             placeholder="Email"
             value={email}
             onChangeText={setEmail}
-            keyboardType="email-location"
+            keyboardType="email-address"
           />
           <TextInput
             style={styles.input}
@@ -94,7 +97,7 @@ export default function CreateVendorForm(props) {
           />
           <Picker
             selectedValue={specialization}
-            onValueChange={itemValue => setSpecialization(itemValue)}
+            onValueChange={(itemValue) => setSpecialization(itemValue)}
             style={styles.picker}
           >
             <Picker.Item label="Select Specialization" value="" />
@@ -105,7 +108,7 @@ export default function CreateVendorForm(props) {
           </Picker>
           <Picker
             selectedValue={location}
-            onValueChange={itemValue => setLocation(itemValue)}
+            onValueChange={(itemValue) => setLocation(itemValue)}
             style={styles.picker}
           >
             <Picker.Item label="Select Location" value="" />
@@ -123,10 +126,7 @@ export default function CreateVendorForm(props) {
             </Text>
           </View>
           <View style={styles.switchContainer}>
-            <Switch
-              value={availability}
-              onValueChange={setAvailability}
-            />
+            <Switch value={availability} onValueChange={setAvailability} />
             <Text style={styles.switchLabel}>
               Availability: {availability ? 'Available' : 'Not Available'}
             </Text>
@@ -138,7 +138,7 @@ export default function CreateVendorForm(props) {
             keyboardType="numeric"
             onChangeText={setWorkingHours}
           />
-          
+
           <TouchableOpacity onPress={createVendor} style={styles.btn}>
             <Text style={styles.btnText}>Create Vendor</Text>
           </TouchableOpacity>
@@ -151,6 +151,17 @@ export default function CreateVendorForm(props) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 10,
+  },
+  formContainer: {
+    padding: 20,
   },
   input: {
     marginVertical: 8,

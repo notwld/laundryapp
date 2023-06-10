@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react'
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
+import baseURL from '../baseURL';
+
 export default function Profile(
   props
 ) {
@@ -13,7 +15,7 @@ export default function Profile(
     console.log(token);
 
     const fetchUser = async ()=>{
-      await fetch('http://192.168.1.107:19001/api/profile/user', {
+      await fetch(baseURL.URL+'profile/user', {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",

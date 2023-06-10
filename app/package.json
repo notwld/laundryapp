@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-native-picker/picker": "^2.4.10",
+    "@react-navigation/drawer": "^6.6.2",
     "@react-navigation/native-stack": "^6.9.12",
     "expo": "~48.0.15",
     "expo-status-bar": "~1.4.4",

@@ -20,6 +20,7 @@ import Customers from './components/Admin/Customers';
 
 
 const Stack = createNativeStackNavigator();
+
 export default function App() {
   return (
     <NavigationContainer>
@@ -42,7 +43,6 @@ export default function App() {
         <Stack.Screen name="Vendors" component={Vendors}/>
         <Stack.Screen name="Machines" component={Machines}/>
         <Stack.Screen name="Orders" component={Orders} />
-
       </Stack.Navigator>
     </NavigationContainer>
   );

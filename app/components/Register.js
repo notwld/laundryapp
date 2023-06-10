@@ -3,6 +3,7 @@ import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity,ScrollView, 
 import logo from '../assets/Logo.png';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import baseURL from '../baseURL';
 
 export default function Register() {
   const navigation = useNavigation();
@@ -20,7 +21,7 @@ export default function Register() {
       Alert.alert('Please fill all the fields!');
       return;
     }
-    fetch('http://192.168.1.107:19001/api/user/register', {
+    fetch(baseURL.URL+'user/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

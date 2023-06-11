@@ -23,19 +23,19 @@ app.use(session({
     cookie: { secure: false }
 }))
 
+
 //routes
 app.use('/api/profile', profile)
 app.use('/api/user', auth)
 app.use('/api/vendor',vendor)
 
 
-//error handler
-app.all('*', (req, res, next) => {
-    res.status(404).send('Not Found');
-});
 app.use((err, req, res, next) => {
+    
     res.status(500).send(err)
+    
 })
+
 
 
 const host = process.env.HOST || "localhost"

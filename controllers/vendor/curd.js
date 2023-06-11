@@ -19,14 +19,24 @@ router.get("/specialization", isAuthenticated, async (req, res, next) => {
 
 router.get('/vendors', isAuthenticated, async (req, res, next) => {
   const vendors = await prisma.vendor.findMany({})
-    .then((vendors) => {
-      return res.status(200).json(vendors);
-    }
-    )
+    .then(async (vendors) => {
+      const vendorsWithSpecializations = await Promise.all(
+        vendors.map(async (vendor) => {
+          const specialization = await prisma.specialization.findUnique({
+            where: { SpecializationID: vendor.SpecializationID }
+          });
+          return {
+            ...vendor,
+            specialization
+          };
+        })
+      );
+      
+      return res.status(200).json(vendorsWithSpecializations);
+    })
     .catch((err) => {
       return res.status(500).json({ message: err });
-    }
-    );
+    });
 });
 
 router.post('/add', isAuthenticated, async (req, res, next) => {

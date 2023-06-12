@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, Switch, Button, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Header from '../Header';
@@ -7,23 +7,27 @@ import baseURL from '../../baseURL';
 import { useNavigation } from '@react-navigation/native';
 
 export default function CreateVendorForm(props) {
-  const { user, token } = props.route.params;
+  const { user, token, vendor, mode } = props.route.params;
   const navigation = useNavigation();
-  const [name, setName] = useState('');
-  const [rates, setRates] = useState('');
-  const [location, setLocation] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [website, setWebsite] = useState('');
-  const [specialization, setSpecialization] = useState('');
+  const [vendorId, setVendorId] = useState(vendor && vendor.VendorID !== undefined ? vendor.VendorID : '');
+  const [name, setName] = useState(vendor && vendor.Name !== undefined ? vendor.Name : '');
+  const [location, setLocation] = useState(vendor && vendor.Location !== undefined ? vendor.Location : '');
+  const [phone, setPhone] = useState(vendor && vendor.Phone !== undefined ? vendor.Phone : '');
+  const [email, setEmail] = useState(vendor && vendor.Email !== undefined ? vendor.Email : '');
+  const [website, setWebsite] = useState(vendor && vendor.Website !== undefined ? vendor.Website : '');
+  const [specialization, setSpecialization] = useState(vendor && vendor.specialization !== undefined ? vendor.specialization : '');
   const [specializationData, setSpecializationData] = useState([]);
-  const [deliveryAvailable, setDeliveryAvailable] = useState(false);
-  const [workingHours, setWorkingHours] = useState('');
-  const [availability, setAvailability] = useState(false);
+  const [deliveryAvailable, setDeliveryAvailable] = useState(vendor && vendor.DeliveryAvailable !== undefined ? vendor.DeliveryAvailable : '');
+  const [workingHours, setWorkingHours] = useState(vendor && vendor.WorkingHours !== undefined ? vendor.WorkingHours : '');
+  const [availability, setAvailability] = useState(vendor && vendor.Availability !== undefined ? vendor.Availability : '');
 
+  
   const createVendor = async () => {
-    console.log(name, rates, location, phone, email, website, specialization, deliveryAvailable, workingHours, availability);
-   
+    if (!name || !location || !phone || !email || !website || !specialization || !workingHours) {
+      Alert.alert('Error', 'Please fill all the required fields');
+      return;
+    }
+    try {
       const response = await fetch(baseURL.URL + 'vendor/add', {
         method: 'POST',
         headers: {
@@ -41,37 +45,82 @@ export default function CreateVendorForm(props) {
           "workingHours": workingHours,
           "availability": availability,
         }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          Alert.alert('Success', 'Vendor created successfully');
-          navigation.navigate('VendorHome', { user: user, token: token });
-
-        }
-        )
-        .catch((err) => console.log(err));
-
+      });
+  
+      const data = await response.json();
+      console.log(data);
+  
+      if (response.status === 200) {
+        Alert.alert('Success', 'Vendor created successfully');
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', 'Failed to create vendor');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'An error occurred while creating vendor');
+    }
   };
+  
+  const editVendor = async () => {
+    if (!name || !location || !phone || !email || !website || !specialization || !workingHours) {
+      Alert.alert('Error', 'Please fill all the required fields');
+      return;
+    }
+    try {
+      const response = await fetch(baseURL.URL + 'vendor/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          "vendorId": vendorId,
+          "name": name,
+          "location": location,
+          "phone": phone,
+          "email": email,
+          "website": website,
+          "specializationID": specialization,
+          "deliveryAvailable": deliveryAvailable,
+          "workingHours": workingHours,
+          "availability": availability,
+        }),
+      });
+  
+      const data = await response.json();
+      console.log(data);
+  
+      if (response.status === 200) {
+        Alert.alert('Success', 'Vendor edited successfully');
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', 'Failed to edit vendor');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'An error occurred while editing vendor');
+    }
+  };
+
+  
+
   useEffect(() => {
     const getSpecialization = async () => {
-      const response = await fetch(baseURL.URL + 'vendor/specialization', {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      })
-        .then((res) => {
-          
-          return res.json();
-
-        })
-        .then((data) => {
-          console.log(data);
-          setSpecializationData(data);
-        }
-        )
-        .catch((err) => console.log(err));
-    }
+      try {
+        const response = await fetch(baseURL.URL + 'vendor/specializations', {
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        console.log(data);
+        setSpecializationData(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     getSpecialization();
   }, []);
 
@@ -79,8 +128,7 @@ export default function CreateVendorForm(props) {
     <View style={{ flex: 1 }}>
       <Header user={user} token={token} />
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.heading}>Create Vendor</Text>
-
+        <Text style={styles.heading}>{mode ? "Edit Vendor" : "Create Vendor"}</Text>
         <View style={styles.formContainer}>
           <TextInput
             style={styles.input}
@@ -88,7 +136,6 @@ export default function CreateVendorForm(props) {
             value={name}
             onChangeText={setName}
           />
-          
           <TextInput
             style={styles.input}
             placeholder="Phone"
@@ -151,10 +198,15 @@ export default function CreateVendorForm(props) {
             keyboardType="numeric"
             onChangeText={setWorkingHours}
           />
-
-          <TouchableOpacity onPress={createVendor} style={styles.btn}>
-            <Text style={styles.btnText}>Create Vendor</Text>
-          </TouchableOpacity>
+          {!mode ? (
+            <TouchableOpacity onPress={createVendor} style={styles.btn}>
+              <Text style={styles.btnText}>Create Vendor</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={editVendor} style={styles.btn}>
+              <Text style={styles.btnText}>Edit Vendor</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </View>

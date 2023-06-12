@@ -38,6 +38,15 @@ export default function Header({
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.logoutButton} onPress={() => {
+            navigation.navigate("Profile", {
+              user: user, token: token
+            })
+          }}>
+            <Text>
+              View Profile
+            </Text>
+          </TouchableOpacity>
         </View>
       </Modal>
       <View style={styles.logoContainer}>
@@ -86,7 +95,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   logoutText: {
-    fontSize: 12,
+    fontSize: 17,
     textDecorationLine: 'underline',
     fontWeight: '500',
     color: 'black',

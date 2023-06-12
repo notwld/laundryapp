@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity,ScrollView, Alert,KeyboardAvoidingView } from 'react-native';
+import { Image, Text, View, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView } from 'react-native';
 import logo from '../assets/Logo.png';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
@@ -21,12 +21,12 @@ export default function Register() {
       Alert.alert('Please fill all the fields!');
       return;
     }
-    fetch(baseURL.URL+'user/register', {
+    fetch(baseURL.URL + 'user/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         "fname": firstName,
         "lname": lastName,
         "username": username,
@@ -35,19 +35,19 @@ export default function Register() {
         "address": address,
         "password": password,
         "role": role,
-       }),
+      }),
     })
       .then((res) => res.json())
       .then((data) => {
-       if (data.message === 'User Registered!') {
-        setAddress('');
-        setPhone('');
-        setLastName('');
-        setFirstName('');
-        setEmail('');
-        setUsername('');
-        setPassword('');
-        setRole('');
+        if (data.message === 'User Registered!') {
+          setAddress('');
+          setPhone('');
+          setLastName('');
+          setFirstName('');
+          setEmail('');
+          setUsername('');
+          setPassword('');
+          setRole('');
 
           Alert.alert('Success', 'User registered successfully!');
           navigation.navigate('Login');
@@ -60,8 +60,8 @@ export default function Register() {
   };
 
   return (
-    
-      <ScrollView contentContainerStyle={styles.registerScreen}>
+
+    <ScrollView contentContainerStyle={styles.registerScreen}>
       <Image source={logo} style={styles.logo} />
       <Text style={styles.head}>Register</Text>
       <View style={styles.inputView}>
@@ -90,7 +90,7 @@ export default function Register() {
           onChangeText={setEmail}
         />
         <TextInput
-          placeholder="Phone" 
+          placeholder="Phone"
           style={styles.inputTag}
           value={phone}
           onChangeText={setPhone}
@@ -135,7 +135,7 @@ export default function Register() {
 
 const styles = StyleSheet.create({
   registerScreen: {
-    
+
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,

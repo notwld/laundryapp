@@ -20,7 +20,7 @@ export default function Login() {
 
 
 
-    await fetch(baseURL.URL+'user/login', {
+    await fetch(baseURL.URL + 'user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

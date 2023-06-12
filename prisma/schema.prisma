@@ -35,18 +35,6 @@ model delivery {
   Status       String?   @db.VarChar(255)
 }
 
-model item {
-  ItemID     Int     @id @default(autoincrement())
-  ItemTypeID Int?
-  ItemName   String? @db.VarChar(255)
-  Price      Float?  @db.Float
-}
-
-model itemtype {
-  ItemTypeID Int     @id @default(autoincrement())
-  ItemType   String? @db.VarChar(255)
-}
-
 model laundrymachine {
   MachineID    Int     @id @default(autoincrement())
   MachineName  String? @db.VarChar(255)
@@ -73,7 +61,6 @@ model order {
 model orderdetails {
   OrderItemID Int  @id @default(autoincrement())
   OrderID     Int?
-  ItemID      Int?
   Quantity    Int?
 }
 
@@ -91,11 +78,11 @@ model servicetype {
 }
 
 model specialization {
-  SpecializationID Int      @id @default(autoincrement())
-  VendorID         Int?
-  Name             String?  @db.VarChar(255)
-  Rates            Float?   @db.Float
-  vendor           vendor[]
+  SpecializationID Int     @id @default(autoincrement())
+  Name             String? @db.VarChar(255)
+  Rates            Float?  @db.Float
+  vendor           vendor? @relation(fields: [vendorVendorID], references: [VendorID])
+  vendorVendorID   Int?
 }
 
 model user {
@@ -115,21 +102,18 @@ model user {
 }
 
 model vendor {
-  VendorID          Int             @id @default(autoincrement())
-  UserID            Int?            @unique(map: "UserID")
-  Name              String?         @db.VarChar(255)
-  Location          String?         @db.VarChar(255)
-  Phone             String?         @db.VarChar(255)
-  Email             String?         @db.VarChar(255)
-  Website           String?         @db.VarChar(255)
+  VendorID          Int              @id @default(autoincrement())
+  UserID            Int?             @unique(map: "UserID")
+  Name              String?          @db.VarChar(255)
+  Location          String?          @db.VarChar(255)
+  Phone             String?          @db.VarChar(255)
+  Email             String?          @db.VarChar(255)
+  Website           String?          @db.VarChar(255)
   DeliveryAvailable Boolean?
-  WorkingHours      String?         @db.VarChar(255)
+  WorkingHours      String?          @db.VarChar(255)
   Availability      Boolean?
-  SpecializationID  Int?
+  Specializations   specialization[]
   averagerating     averagerating[]
-  specialization    specialization? @relation(fields: [SpecializationID], references: [SpecializationID], onDelete: NoAction, onUpdate: NoAction, map: "vendor_ibfk_1")
-
-  @@index([SpecializationID], map: "SpecializationID")
 }
 
 model averagerating {

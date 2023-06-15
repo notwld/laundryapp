@@ -35,7 +35,20 @@ export default function VendorHome(props) {
 
   useFocusEffect(
     React.useCallback(() => {
+      
       fetchVendors();
+      const onBackPress = () => {
+        if (!user) {  
+          return false;
+        }
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
     }, [])
   );
 

@@ -9,6 +9,7 @@ const app = express();
 const auth = require('./controllers/auth')
 const profile = require('./controllers/profile')
 const vendor = require('./controllers/vendor/curd')
+const customer = require('./controllers/customer/curd')
 
 
 //middlewares
@@ -28,6 +29,7 @@ app.use(session({
 app.use('/api/profile', profile)
 app.use('/api/user', auth)
 app.use('/api/vendor',vendor)
+app.use("/api/customer",customer)
 
 
 app.use((err, req, res, next) => {

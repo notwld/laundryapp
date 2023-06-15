@@ -27,88 +27,85 @@ router.get('/vendors', isAuthenticated, async (req, res, next) => {
 });
 
 router.post('/add', isAuthenticated, async (req, res, next) => {
-    const vendorExists = await prisma.vendor.findFirst({
-      where: {
-        Name: req.body.name,
+  const vendorExists = await prisma.vendor.findFirst({
+    where: {
+      Name: req.body.name,
+    },
+  });
+  if (vendorExists) {
+    return res.status(400).json({ message: 'Vendor already exists!' });
+  }
+
+  const createdVendor = await prisma.vendor.create({
+    data: {
+      Name: req.body.name,
+      Location: req.body.location,
+      Phone: req.body.phone,
+      Email: req.body.email,
+      Website: req.body.website,
+      DeliveryAvailable: req.body.deliveryAvailability,
+      WorkingHours: req.body.workingHours,
+      Availability: req.body.availability,
+      Specializations: {
+        connect: req.body.specializationID.map((id) => ({ SpecializationID: id })),
       },
+      UserID: req.session.user,
+    },
+  })
+    .then((addedVendor) => {
+      res.status(200).json({
+        message: 'Vendor Added',
+        vendor: addedVendor.Name,
+      });
+    })
+    .catch((e) => {
+      return res.status(500).json({
+        message: "Vendor Couldn't be added " + e,
+      });
     });
-    if (vendorExists) {
-      return res.status(400).json({ message: 'Vendor already exists!' });
-    }
-
-    const createdVendor = await prisma.vendor.create({
-      data: {
-        Name: req.body.name,
-        Location: req.body.location,
-        Phone: req.body.phone,
-        Email: req.body.email,
-        Website: req.body.website,
-        DeliveryAvailable: req.body.deliveryAvailability,
-        WorkingHours: req.body.workingHours,
-        Availability: req.body.availability,
-        Specializations: {
-          connect: { SpecializationID: req.body.specializationID },
-        },
-        UserID: req.session.user,
-      },
-    })
-    .then((addedVendor)=>{
-        res.status(200).json({
-          message:"Vendor Added",
-          vendor:addedVendor.Name
-        })
-    })
-    .catch(e=>{return res.status(500).json({
-      message:"Vendor Couldn't be added "+e,
-
-    })})
 });
 
 router.post('/update', isAuthenticated, async (req, res, next) => {
-  console.log(req.body)
-    const vendor = await prisma.vendor.findFirst({
-      where: {
-        VendorID:req.body.vendorId
-      },
-    });
-
-    if (!vendor) {
-      return res.status(400).json({ message: "Vendor doesn't exist!" });
-    }
-
-    const updatedVendor = await prisma.vendor.update({
-      where: {
-        VendorID: vendor.VendorID,
-      },
-      data: {
-        Name:req.body.name,
-        Location: req.body.location,
-        Phone: req.body.phone,
-        Email: req.body.email,
-        Website: req.body.website,
-        DeliveryAvailable: req.body.deliveryAvailable,
-        WorkingHours: req.body.workingHours,
-        Availability: req.body.availability,
-        Specializations: {
-          set: [{ SpecializationID: req.body.specializationID }],
-          
-        },
-      },
-    })
-    .then((updatedVendor)=>{
-      return res.status(200).json({
-        message:"Vendor Updated Successfully!"
-      })
-    })
-    .catch(e=>{
-      console.log(e)
-      return res.status(500).json({
-        message:"Vendor couldn't be updated!"
-      })
-    })
-
+  const vendor = await prisma.vendor.findFirst({
+    where: {
+      VendorID: req.body.vendorId,
+    },
   });
 
+  if (!vendor) {
+    return res.status(400).json({ message: "Vendor doesn't exist!" });
+  }
+
+  const updatedVendor = await prisma.vendor.update({
+    where: {
+      VendorID: vendor.VendorID,
+    },
+    data: {
+      Name: req.body.name,
+      Location: req.body.location,
+      Phone: req.body.phone,
+      Email: req.body.email,
+      Website: req.body.website,
+      DeliveryAvailable: req.body.deliveryAvailable,
+      WorkingHours: req.body.workingHours,
+      Availability: req.body.availability,
+      Specializations: {
+        set: req.body.specializationID.map((id) => ({ SpecializationID: id })),
+      },
+    },
+  })
+    .then((updatedVendor) => {
+      return res.status(200).json({
+        message: 'Vendor Updated Successfully!',
+      });
+    })
+    .catch((e) => {
+      console.log(e);
+      return res.status(500).json({
+        message: "Vendor couldn't be updated!",
+      });
+    });
+});
 router.post('/delete', isAuthenticated, async (req, res, next) => {
   try {
     const vendor = await prisma.vendor.findFirst({

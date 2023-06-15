@@ -59,4 +59,38 @@ router.post("/register", async (req, res) => {
   );
 });
 
+router.put('/customers/:customerId', isAuthenticated, async (req, res) => {
+  try {
+    const customerId = parseInt(req.params.customerId);
+    const { customerName, billingAddress, paymentMethod } = req.body;
+    const updatedCustomer = await prisma.customer.update({
+      where: { CustomerID: customerId },
+      data: {
+        CustomerName: customerName,
+        BillingAddress: billingAddress,
+        PaymentMethod: paymentMethod,
+      },
+    });
+
+    res.status(200).json(updatedCustomer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to update customer.' });
+  }
+});
+
+router.delete('/customers/:customerId', isAuthenticated, async (req, res) => {
+  try {
+    const customerId = parseInt(req.params.customerId);
+    await prisma.customer.delete({
+      where: { CustomerID: customerId },
+    });
+
+    res.status(204).end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to delete customer.' });
+  }
+});
+
 module.exports = router;

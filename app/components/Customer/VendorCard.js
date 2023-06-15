@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const VendorCard = ({ vendor, onPress }) => {
+const VendorCard = ({ vendor, onPress, specializations }) => {
   // Calculate the number of filled and empty stars based on the average rating
   const filledStars = Math.floor(vendor.AverageRating);
   const emptyStars = 5 - filledStars;
@@ -26,9 +26,15 @@ const VendorCard = ({ vendor, onPress }) => {
 
         <View style={styles.iconContainer}>
           <Ionicons name="list" size={20} color="#fff" />
-          {/* <Text style={styles.iconText}>
-            Specialized in {vendor.Specializations.join(', ')}
-          </Text> */}
+          <Text style={styles.iconText}>
+            Specialized in {specializations
+              .filter(
+                (specialization) =>
+                  specialization.vendorVendorID === vendor.VendorID
+              )
+              .map((specialization) => specialization.Name)
+              .join(', ')}
+          </Text>
         </View>
 
         {/* <View style={styles.starContainer}>
@@ -37,7 +43,12 @@ const VendorCard = ({ vendor, onPress }) => {
             <Ionicons key={index} name="star" size={16} color="#FFD700" />
           ))}
           {[...Array(emptyStars)].map((_, index) => (
-            <Ionicons key={index} name="star-outline" size={16} color="#FFD700" />
+            <Ionicons
+              key={index}
+              name="star-outline"
+              size={16}
+              color="#FFD700"
+            />
           ))}
         </View> */}
       </LinearGradient>

@@ -15,6 +15,7 @@ const CustomerHome = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredVendors, setFilteredVendors] = useState([]);
+  const [specializations, setSpecializations] = useState([]);
 
   useEffect(() => {
     if (selectedCity !== '') {
@@ -99,6 +100,7 @@ const CustomerHome = (props) => {
         .filter((specialization) => specialization.Name);
       setVendors(data);
       setFilteredVendors(data);
+      setSpecializations(flattenedSpecializations);
     } catch (error) {
       console.log(error);
     }
@@ -199,11 +201,14 @@ const CustomerHome = (props) => {
             <VendorCard
               key={vendor.VendorID}
               vendor={vendor}
+              specializations={specializations}
               onPress={() =>
                 navigation.navigate('VendorDetail', {
                   vendor: vendor,
                   user: user,
+                  specializations: specializations,
                   token: token,
+                  
                 })
               }
             />

@@ -23,28 +23,29 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-    <StatusBar style="auto" hidden={true}/>
-      <Stack.Navigator screenOptions={{
-        headerShown:false
-      }} initialRouteName='Login'>
-        <Stack.Screen name="Login" component={Login}/>
-        <Stack.Screen name="Register" component={Register}/>
-        <Stack.Screen name="AdminHome" component={AdminHome}/>
-        <Stack.Screen name="CustomerHome" component={CustomerHome}/>
-        <Stack.Screen name="VendorHome" component={VendorHome}/>
-        <Stack.Screen name="LaundryStaffHome" component={LaundryStaffHome}/>
-        <Stack.Screen name="CreateVendorForm" component={CreateVendorForm}/>
-        <Stack.Screen name="Profile" component={Profile}/>
-        <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen}/>
-        <Stack.Screen name="Customers" component={Customers}/>
-        <Stack.Screen name="Staff" component={Staff}/>
-        <Stack.Screen name="Sales" component={Sales}/>
-        <Stack.Screen name="Vendors" component={Vendors}/>
-        <Stack.Screen name="Machines" component={Machines}/>
-        <Stack.Screen name="Orders" component={Orders} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    // <NavigationContainer>
+    // <StatusBar style="auto" hidden={true}/>
+    //   <Stack.Navigator screenOptions={{
+    //     headerShown:false
+    //   }} initialRouteName='Login'>
+    //     <Stack.Screen name="Login" component={Login}/>
+    //     <Stack.Screen name="Register" component={Register}/>
+    //     <Stack.Screen name="AdminHome" component={AdminHome}/>
+    //     <Stack.Screen name="CustomerHome" component={CustomerHome}/>
+    //     <Stack.Screen name="VendorHome" component={VendorHome}/>
+    //     <Stack.Screen name="LaundryStaffHome" component={LaundryStaffHome}/>
+    //     <Stack.Screen name="CreateVendorForm" component={CreateVendorForm}/>
+    //     <Stack.Screen name="Profile" component={Profile}/>
+    //     <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen}/>
+    //     <Stack.Screen name="Customers" component={Customers}/>
+    //     <Stack.Screen name="Staff" component={Staff}/>
+    //     <Stack.Screen name="Sales" component={Sales}/>
+    //     <Stack.Screen name="Vendors" component={Vendors}/>
+    //     <Stack.Screen name="Machines" component={Machines}/>
+    //     <Stack.Screen name="Orders" component={Orders} />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
+    <CustomerHome/>
   );
 }
 

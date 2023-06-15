@@ -27,7 +27,7 @@ export default function AdminHome(props) {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        if (!user) {
+        if (!user) {  
           return false;
         }
         return true;

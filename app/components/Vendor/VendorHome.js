@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView,Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -69,16 +69,13 @@ export default function VendorHome(props) {
                 },
                 body: JSON.stringify({ vendorId }),
               });
-  
+
               if (response.ok) {
-                // Vendor deleted successfully
                 const data = await response.json();
                 console.log(data.message);
-                
-                // Call fetchVendors to update the vendor list
+
                 fetchVendors();
               } else {
-                // Handle the error when the vendor couldn't be deleted
                 const errorData = await response.json();
                 console.log(errorData.message);
               }
@@ -90,7 +87,7 @@ export default function VendorHome(props) {
       ]
     );
   };
-  
+
 
   return (
     <View style={styles.container}>

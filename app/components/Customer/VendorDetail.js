@@ -86,7 +86,7 @@ const VendorDetail = (props) => {
                                     >
                                         <Picker.Item label="Shalwar" value="Shalwar" />
                                         <Picker.Item label="Kameez" value="Kameez" />
-                                     
+
                                         <Picker.Item label="Pant" value="Pant" />
                                         <Picker.Item label="Shirt" value="Shirt" />
                                         <Picker.Item label="Jeans" value="Jeans" />

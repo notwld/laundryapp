@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TextInput, Switch } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Button, TextInput, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import baseURL from '../../baseURL';
@@ -14,35 +14,46 @@ const VendorDetail = (props) => {
     const [specializationRates, setSpecializationRates] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
     const [tax, setTax] = useState(5);
-    console.log(specializationRates);
+
     const calculateTotalCost = () => {
         let cost = quantity * specializationRates;
-        cost += cost * tax / 100;
+        cost += (cost * tax) / 100;
         setTotalCost(cost);
     };
-    const handleQuantityChange = (value) => {
-        setQuantity(value);
-        calculateTotalCost()
+
+    const handleQuantityIncrement = () => {
+        setQuantity((prevQuantity) => prevQuantity + 1);
+        calculateTotalCost();
     };
 
-    const handleItemChange = (item) => {
-        const updatedItems = selectedItems.includes(item)
-            ? selectedItems.filter((selectedItem) => selectedItem !== item)
-            : [...selectedItems, item];
+    const handleQuantityDecrement = () => {
+        if (quantity > 0) {
+            setQuantity((prevQuantity) => prevQuantity - 1);
+            calculateTotalCost();
+        }
+    };
+
+    const handleItemChange = (item, index) => {
+        const updatedItems = [...selectedItems];
+        updatedItems[index] = item;
         setSelectedItems(updatedItems);
-        calculateTotalCost()
-        console.log(selectedItems, totalCost);
-
-
+        calculateTotalCost();
     };
 
     const { vendor, user, token, specializations } = props.route.params;
-    console.log(specializations);
-    const filledStars = Math.floor(vendor.AverageRating);
-    const emptyStars = 5 - filledStars;
+
+
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
     };
+    useEffect(() => {
+        specialRates = specializations.filter(
+            (specialization) => specialization.vendorVendorID === vendor.VendorID
+        )[0]
+        setSpecializationRates(specialRates.Rates);
+        console.log(specialRates);
+    }, []);
+
     const handleLogout = async () => {
         await fetch(baseURL.URL + 'user/logout')
             .then((res) => res.json())
@@ -55,24 +66,26 @@ const VendorDetail = (props) => {
             })
             .catch((err) => console.log(err));
     };
+
     return (
         <View>
             <Modal visible={isFormOpen} animationType="slide" transparent>
                 <View style={styles.modalContainer}>
-                    <TouchableOpacity style={styles.closeIcon} onPress={() => {
-                        setIsFormOpen(false)
-                    }}>
+                    <TouchableOpacity style={styles.closeIcon} onPress={() => setIsFormOpen(false)}>
                         <Ionicons name="close" size={30} color="#fff" />
                     </TouchableOpacity>
 
                     <View style={styles.formContainer}>
                         <Text style={styles.formLabel}>Quantity:</Text>
-                        <TextInput
-                            style={styles.formInput}
-                            value={quantity}
-                            onChangeText={handleQuantityChange}
-                            keyboardType="numeric"
-                        />
+                        <View style={styles.quantityContainer}>
+                            <TouchableOpacity style={styles.quantityButton} onPress={handleQuantityDecrement}>
+                                <Text style={styles.quantityButtonText}>-</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.quantity}>{quantity}</Text>
+                            <TouchableOpacity style={styles.quantityButton} onPress={handleQuantityIncrement}>
+                                <Text style={styles.quantityButtonText}>+</Text>
+                            </TouchableOpacity>
+                        </View>
 
                         <View style={styles.formLabel}>
                             {Array.from({ length: quantity }).map((_, index) => (
@@ -86,25 +99,19 @@ const VendorDetail = (props) => {
                                     >
                                         <Picker.Item label="Shalwar" value="Shalwar" />
                                         <Picker.Item label="Kameez" value="Kameez" />
-
                                         <Picker.Item label="Pant" value="Pant" />
                                         <Picker.Item label="Shirt" value="Shirt" />
                                         <Picker.Item label="Jeans" value="Jeans" />
-
                                     </Picker>
                                 </View>
                             ))}
-
                         </View>
 
-                        <View style={styles.totalCostContainer}>
-                            <Text style={styles.totalCostText}>Total Cost: {totalCost}</Text>
-                            <Text style={styles.totalCostText}>Tax: {tax}%</Text>
-                        </View>
-
-                        <TouchableOpacity style={styles.submitButton}>
-                            <Text style={styles.submitButtonText}>Confirm Order</Text>
-                        </TouchableOpacity>
+                        <Button title="Place Order" onPress={() => {
+                            calculateTotalCost();
+                            Alert.alert('Order Placed Successfully!', `Your Order: ${selectedItems.join(', ')}\nTax: ${tax}%\nTotal Cost: ${totalCost}$
+                            `);
+                        }} />
                     </View>
                 </View>
             </Modal>
@@ -142,8 +149,7 @@ const VendorDetail = (props) => {
                                     }
                                 )
                                 .map((specialization) => {
-                                    setSpecializationRates(specialization.Rate);
-                                    specialization.Name
+                                    specialization.Name + ' ' + specialization.Rates + '$'
                                 })
                                 .join(', ')}
                         </Text>
@@ -232,6 +238,39 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 7,
         paddingVertical: 10,
+    },
+    quantityContainer: {
+        flexDirection: 'row',
+        marginBottom: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    quantityButton: {
+        backgroundColor: 'cyan',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 5,
+        marginRight: 10,
+
+    },
+    quantityButtonText: {
+        color: '#000',
+        fontSize: 18,
+    },
+    quantity: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginRight: 10,
+    },
+    pickerContainer: {
+        marginBottom: 10,
+    },
+    pickerInput: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
     },
     totalCostContainer: {
         flexDirection: 'column',

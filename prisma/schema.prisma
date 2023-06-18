@@ -35,12 +35,6 @@ model delivery {
   Status       String?   @db.VarChar(255)
 }
 
-model laundrymachine {
-  MachineID    Int     @id @default(autoincrement())
-  MachineName  String? @db.VarChar(255)
-  Availability String? @db.VarChar(255)
-}
-
 model laundrystaff {
   StaffID  Int     @id @default(autoincrement())
   JobTitle String? @db.VarChar(255)
@@ -48,21 +42,18 @@ model laundrystaff {
 }
 
 model order {
-  OrderID       Int       @id @default(autoincrement())
-  CustomerID    Int?
-  ServiceTypeID Int?
-  OrderDate     DateTime? @db.DateTime(0)
-  TotalCost     Float?    @db.Float
-  PaymentStatus String?   @db.VarChar(255)
-  OrderStatus   String?   @db.VarChar(255)
-  clothes       clothes[]
+  OrderID        Int       @id @default(autoincrement())
+  CustomerID     Int?
+  OrderDate      DateTime? @db.DateTime(0)
+  TotalCost      Float?    @db.Float
+  PaymentStatus  Boolean?   
+  Quantity      Int 
+  OrderStatus    Boolean?
+  clothes        clothes[]
+  vendor         vendor?   @relation(fields: [vendorVendorID], references: [VendorID])
+  vendorVendorID Int?
 }
 
-model orderdetails {
-  OrderItemID Int  @id @default(autoincrement())
-  OrderID     Int?
-  Quantity    Int?
-}
 
 model reviews {
   ReviewID   Int     @id @default(autoincrement())
@@ -72,10 +63,7 @@ model reviews {
   ReviewText String? @db.Text
 }
 
-model servicetype {
-  ServiceTypeID   Int     @id @default(autoincrement())
-  ServiceTypeName String? @db.VarChar(255)
-}
+
 
 model specialization {
   SpecializationID Int     @id @default(autoincrement())
@@ -114,6 +102,7 @@ model vendor {
   Availability      Boolean?
   Specializations   specialization[]
   averagerating     averagerating[]
+  orders            order[]
 }
 
 model averagerating {

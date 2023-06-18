@@ -108,9 +108,19 @@ export default function VendorHome(props) {
       <View style={styles.vendorListContainer}>
         <View style={styles.vendorHeader}>
           <Text style={styles.vendorHeaderText}>Your Vendors</Text>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
           <TouchableOpacity onPress={navigateHandler}>
             <Text style={styles.createVendorText}>Create Vendor</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={()=>[
+            navigation.navigate('VendorOrders', { user, token })
+          ]}>
+            <Text style={styles.createVendorText}>Orders</Text>
+          </TouchableOpacity>
+          </View>
         </View>
         {vendors.length > 0 ? (
           <ScrollView contentContainerStyle={styles.scrollViewContent}>

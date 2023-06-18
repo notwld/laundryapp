@@ -19,6 +19,7 @@ import Staff from './components/Admin/Staff';
 import Customers from './components/Admin/Customers';
 import CustomerRegistration from './components/Customer/CustomerRegistration';
 import VendorDetail from './components/Customer/VendorDetail';
+import VendorOrders from './components/Vendor/VendorOrders';
 
 
 const Stack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ export default function App() {
         <Stack.Screen name="Customers" component={Customers}/>
         <Stack.Screen name="CustomerRegistration" component={CustomerRegistration}/>
         <Stack.Screen name="VendorDetail" component={VendorDetail}/>
+        <Stack.Screen name="VendorOrders" component={VendorOrders}/>
         <Stack.Screen name="Staff" component={Staff}/>
         <Stack.Screen name="Sales" component={Sales}/>
         <Stack.Screen name="Vendors" component={Vendors}/>

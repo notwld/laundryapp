@@ -1,5 +1,4 @@
 const { PrismaClient } = require('@prisma/client')
-
 const prisma = new PrismaClient()
 const router = require("express").Router()
 const bcrypt = require('bcryptjs');
